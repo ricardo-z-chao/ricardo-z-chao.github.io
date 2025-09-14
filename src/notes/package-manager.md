@@ -318,7 +318,7 @@ npm link [<@scope>/]<pkg>[@<version>]
 
 workspaces 弥补了从本地文件系统处理链接包的工作流的不足，作为 `npm install` 的一部分，它自动化了链接过程，并消除了手动使用 `npm link` 的需要，以便添加对应该符号链接到当前 `node_modules` 文件夹中的包的引用。
 
-当项目中存在 `package.json` 文件时，可以使用 `npm init` 来初始化一个新的 workspace：
+当项目中存在 `package.json` 文件时，可以使用 `npm init` 来初始化一个新的 workspace，这将会为这个包创建一个符号链接在当前 `node_modules` 文件夹中。
 
 ```shell
 npm init -w <workspace-name>
