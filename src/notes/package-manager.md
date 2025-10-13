@@ -392,9 +392,13 @@ node_modules
 
 ## 运行脚本
 
+- `pnpm run`
+
+  运行在软件包`package.json`中定义的脚本。
+
 - `pnpm exec`
 
-  在项目范围内执行 shell 命令。
+  在项目范围内执行 shell 命令。`node_modules/.bin` 被添加到 `PATH`，因此 `pnpm exec` 允许执行依赖项的命令。
 
 - `pnpm dlx`
 
