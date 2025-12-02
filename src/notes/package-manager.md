@@ -318,13 +318,33 @@ npm link [<@scope>/]<pkg>[@<version>]
 
 workspaces 弥补了从本地文件系统处理链接包的工作流的不足，作为 `npm install` 的一部分，它自动化了链接过程，并消除了手动使用 `npm link` 的需要，以便添加对应该符号链接到当前 `node_modules` 文件夹中的包的引用。
 
-当项目中存在 `package.json` 文件时，可以使用 `npm init` 来初始化一个新的 workspace，这将会为这个包创建一个符号链接在当前 `node_modules` 文件夹中。
-
-```shell
-npm init -w <workspace-name>
+```json
+{
+  "name": "my-workspaces-powered-project",
+  "workspaces": ["packages/a"]
+}
 ```
 
-workspaces 通常定义在 `package.json` 文件的 `workspaces` 字段中：
+```
+├─ package.json
+└─ packages
+   └─ a
+      └─ package.json
+```
+
+使用 `npm install` 之后：
+
+```
+├─ node_modules
+|  └─  bar -> ../packages/a
+├─ package-lock.json
+├─ package.json
+└─ packages
+   └─ a
+      └─ package.json
+```
+
+当项目中存在 `package.json` 文件时，可以使用 `npm init` 来初始化一个新的 workspace，这将会为这个包创建一个符号链接在当前 `node_modules` 文件夹中，并且在 `package.json` 文件中定义 `workspaces` 字段：
 
 ```shell
 npm init -w worksapces/a
@@ -332,7 +352,6 @@ npm init -w worksapces/a
 
 ```json
 {
-  "name": "my-workspaces-powered-project",
   "workspaces": ["workspaces/a"]
 }
 ```
@@ -414,21 +433,19 @@ node_modules
 
 ## pnpm workspace
 
-pnpm 内置了对 monorepo 的支持，可以创建一个 Workspace 来将多个项目合并到一个存储库中，一个 Workspace 必须在它的根目录有一个 `pnpm-workspace.yaml` 文件，定义了工作空间的根目录，并能够从工作空间中包含/排除目录。默认情况下，包含所有子目录的所有包。
+pnpm 内置了对 monorepo 的支持，可以创建一个 Workspace 来将多个项目合并到一个存储库中，一个 Workspace 必须在它的根目录有一个 `pnpm-workspace.yaml` 文件，定义了工作空间的根目录，并能够从工作空间中包含或者排除目录。默认情况下，包含所有子目录的所有包。
 
 ```yaml
 packages:
-  # 指定根目录直接子目录中的包
-  - 'my-app'
-  # packages/ 直接子目录中的所有包
-  - 'packages/*'
-  # components/ 子目录中的所有包
-  - 'components/**'
-  # 排除测试目录中的包
-  - '!**/test/**'
+  - 'my-app' 				# 指定根目录直接子目录中的包
+  - 'packages/*' 		# packages/ 直接子目录中的所有包
+  - 'components/**' # components/ 子目录中的所有嵌套的包
+  - '!**/test/**'   # 排除测试目录中的包
 ```
 
-如果 `link-workspace-packages` 设置为 `true`，则 pnpm 将在可用包与声明的范围匹配时链接工作区中的包。例如如果 `bar` 在其依赖项中具有 `"foo": "^1.0.0"` 并且 `foo@1.0.0` 在工作区中，则 `foo@1.0.0` 会链接到 `bar`。如果工作区没有 `foo@1.0.0`，那么则会从源中安装。
+> [!NOTE]
+>
+> 如果 `link-workspace-packages` 设置为 `true`，则 pnpm 将在可用包与声明的范围匹配时链接工作区中的包。例如如果 `bar` 在其依赖项中具有 `"foo": "^1.0.0"` 并且 `foo@1.0.0` 在工作区中，则 `foo@1.0.0` 会链接到 `bar`。如果工作区没有 `foo@1.0.0`，那么则会从源中安装。
 
 pnpm 支持 `workspace:` 协议，当使用此协议时，pnpm 将拒绝解析除本地工作空间所包含包之外的任何内容。如果使用 `workspace:` 协议，pnpm 将仅链接来自工作区的包。
 
