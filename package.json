@@ -1,0 +1,23 @@
+{
+  "name": "ricardo-z-chao.github.io",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "个人博客",
+  "author": "ricardo <ricardo.z.chao@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0",
+    "markdown-it-mathjax3": "^4.3.2",
+    "mermaid": "^11.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "vitepress": "^1.6.3"
+  }
+}
