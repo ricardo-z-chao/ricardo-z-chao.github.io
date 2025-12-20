@@ -83,6 +83,36 @@ git config --global user.name xxx
 git config --global user.email xxx@xx.com
 ```
 
+设置默认的文本编辑器，如果未配置，Git 会使用操作系统默认的文本编辑器：
+
+```shell
+git config --global core.editor <editor_name>
+```
+
+Git 会忽略文件名大小写，如果需要设置不忽略，修改当前仓库设置：
+
+```shell
+git config core.ignorecase false
+```
+
+如果把此项指定为你的系统上某个文件的路径，当你提交的时候，Git 会使用该文件的内容作为提交的默认信息，即提交模板：
+
+```shell
+git config --global commit.template <file_path>
+```
+
+当 `core.autocrlf` 为 `true` 时，会在提交时转换为 LF，检出时根据当前系统决定转换为 CRLF，或者不转换。为 `false` 时，在提交和检出时不做任何转换。
+
+```shell
+git config --global core.autocrlf true
+```
+
+`core.safecrlf` 设置为 `true` 时，如果文件混用 LF 和 CRLF 则拒绝提交。如果不设置，默认提交包含混合换行符的文件时给出警告。
+
+```shell
+git config --global core.safecrlf true
+```
+
 ## 获取仓库
 
 1. 在现有目录中初始化仓库
@@ -826,7 +856,7 @@ git clean -n
 
 ## 交互式变基
 
-可以给`git rebase`加上`-i`选项来进行交互式变基，必须要指定重写多远的历史。
+可以给 `git rebase` 加上 `-i` 选项来进行交互式变基，必须要指定重写多远的历史。
 
 ```shell
 # 表示在HEAD~3..HEAD范围内的每一个提交都会被重写
@@ -836,9 +866,9 @@ git rebase -i HEAD~3
 交互式变基给你一个将会运行的脚本，它将指定范围的提交从旧到新开始依次重演，例如：
 
 ```
-pick 7d46817 first-commit
-pick 2926fd9 second-commit
-pick f533e0c lastest-commit
+pick 7d46817 first
+pick 2926fd9 second
+pick f533e0c latest
 
 # Rebase a4331a7..f533e0c onto a4331a7 (3 commands)
 #
@@ -865,79 +895,91 @@ pick f533e0c lastest-commit
 # However, if you remove everything, the rebase will be aborted.
 ```
 
-- 拆分提交
+如果要拆分提交，将要拆分的提交的指令修改为“edit”：
 
-    如果要拆分提交，将要拆分的提交的指令修改为“edit”：
+```mermaid
+gitGraph
+   commit id:"first"
+   commit id:"second"
+   commit id:"latest"
+```
 
-    ```
-    pick 7d46817 first-commit
-    edit 2926fd9 second-commit
-    pick f533e0c lastest-commit
-    ```
+```
+pick 7d46817 first
+edit 2926fd9 second
+pick f533e0c latest
+```
 
-    当退出编辑器时，Git 应用第一个提交`7d46817`，应用第二个提交`2926fd9`时会让你进入命令行，重置到之前提交后，从中创建几个提交，最后完成时运行`git rebase --continue`：
+当退出编辑器时，Git 应用第一个提交 `7d46817`，应用第二个提交 `2926fd9` 时会让你进入命令行，若要重置当前的内容创建新的提交：
 
-    ```shell
-    git reset HEAD~
-    git add README
-    git commit -m 'update README'
-    git add main.c
-    git commit -m 'add main.c'
-    git rebase --continue
-    ```
+```shell
+git reset HEAD~
+git add README
+git commit -m 'update README'
+git add main.c
+git commit -m 'add main.c'
+git rebase --continue
+```
 
-    最后提交历史会像这样：
+最后提交历史会像这样：
 
-    ```
-    edea77c lastest-commit
-    9b29157 add main.c
-    35cfb2b updated README
-    a4331a7 first-commit
-    ```
+```mermaid
+gitGraph
+   commit id:"first"
+   commit id:"update README"
+   commit id:"add main.c"
+   commit id:"latest"
+```
 
-- 压缩提交
+也可以使用“squash”将一连串的提交压缩为一个提交：
 
-    可以将一连串的提交压缩为一个提交：
-
-    ```
-    pick 7d46817 first-commit
-    squash 2926fd9 second-commit
-    squash f533e0c lastest-commit
-    ```
+```
+pick 7d46817 first
+squash 2926fd9 second
+squash f533e0c lastest
+```
 
 ## 重置
 
-撤销本次提交，不改变当前工作目录的内容和暂存区的内容。这个命令只会移动`HEAD`指向的分支（不是改变`HEAD`自身）。
+1. 撤销本次提交，不改变当前工作目录的内容和暂存区的内容。
 
-```shell
-git reset --soft HEAD~
-```
+   ```shell
+   # 即移动HEAD指向的分支，不是改变HEAD自身
+   git reset --soft HEAD~
+   ```
 
-撤销本次提交，并且将暂存区回到上一次提交后的状态，不改变当前工作目录的内容。即移动`HEAD`指向的分支，然后用`HEAD`指向的快照内容来更新索引。
+2. 撤销本次提交，并且将暂存区回到上一次提交后的状态，不改变当前工作目录的内容。
 
-```shell
-# --mixed可以省略，这是git reset的默认行为
-git reset --mixed HEAD~
-```
+   ```shell
+   # 即移动HEAD指向的分支，然后用HEAD指向的快照内容来更新索引
+   git reset --mixed HEAD~
+   ```
 
- 撤销本次提交，并且将暂存区和工作目录的所有东西回到上一次提交后的状态。即移动`HEAD`指向的分支，然后用`HEAD`指向的快照内容来更新索引，最后让工作目录看起像索引。
+   > [!NOTE]
+   >
+   > `--mixed` 可以省略，这是 `git reset` 的默认行为
 
-```shell
-git reset --hard HEAD~
-```
+3. 撤销本次提交，并且将暂存区和工作目录的所有东西回到上一次提交后的状态。
 
-可以给`git reset`指定路径，这将跳过移动`HEAD`指针，并且将`reset`的作用范围限定为指定的文件或文件集合。
+   ```shell
+   # 即移动HEAD指向的分支，然后用HEAD指向的快照内容来更新索引，最后让工作目录看起像索引
+   git reset --hard HEAD~
+   ```
+
+可以给 `git reset` 指定路径，这将跳过移动 `HEAD` 指针，并且将重置的作用范围限定为指定的文件或文件集合。`HEAD`是一个指针，无法让它同时指向两个提交中各自的一部分，不过索引和工作目录可以部分更新，所以重置将跳过 `HEAD` 移动。
 
 ```shell
 # 取消file.txt的暂存，本质上是将file.txt从HEAD复制到索引中
+git reset HEAD file.txt
+# 等价的命令
 git reset file.txt
 ```
 
-> `HEAD`是一个指针，无法让它同时指向两个提交中各自的一部分，不过索引和工作目录可以部分更新，所以重置将跳过`HEAD`移动。
+> [!NOTE]
+>
+> `git checkout` 与 `git reset --hard` 类似，都是操作索引、`HEAD` 和工作目录。不同于 `git reset --hard`，`git checkout` 对工作目录是安全的，会通过检查来确保不会将已更改的文件弄丢。另外 `git checkout` 只会移动 `HEAD` 自身来指向另外一个分支。
 
-`git checkout`与`git reset --hard`类似，都是操作索引、`HEAD`和工作目录。不同于`git reset --hard`，`git checkout`对工作目录是安全的，会通过检查来确保不会将已更改的文件弄丢。另外`git checkout`只会移动`HEAD`自身来指向另外一个分支。
-
-运行`git checkout`的另一种方式就是指定一个文件路径。带路径的`git checkout`不会移动`HEAD`，但是会用该提交中的那个文件来更新索引，同样会覆盖工作目录中对应的文件。
+运行 `git checkout` 的另一种方式就是指定一个文件路径。带路径的 `git checkout` 不会移动 `HEAD`，但是会用该提交中的那个文件来更新索引，同样会覆盖工作目录中对应的文件。
 
 ```shell
 git checkout [branch] -- <file>
@@ -945,14 +987,14 @@ git checkout [branch] -- <file>
 
 ## 还原提交
 
-如果不小心进行了一次提交，可以使用`git revert`来生成一次新的提交，这个提交将会撤销一个已存在的提交的所有更改。
+如果不小心进行了一次提交，可以使用 `git revert` 来生成一次新的提交，这个提交将会撤销一个已存在的提交的所有更改。
 
 ```shell
 # 撤销HEAD提交，保留第一父提交，-m选项表示需要被保留下来的父节点，即选择主线1或2
 git revert -m 1 HEAD
 ```
 
-`m'`和`c6`具有完全一样的内容，从这开始就像是合并从未发生过一样。
+`m'` 和 `c6` 具有完全一样的内容，从这开始就像是合并从未发生过一样。
 
 ```mermaid
 ---
@@ -971,7 +1013,7 @@ gitGraph
    commit id:"m'" type: REVERSE
 ```
 
-如果此时在 develop 分支中增加工作然后再次合并到 main 中，Git 只会包含被还原的合并之后的修改。`c8`包含`m'`和`c7`，但是不包含`c4`中的内容。三方合并时认为 c4 中的内容已经被删除，此时合并只会包含 c7 的内容。
+如果此时在 develop 分支中增加工作然后再次合并到 main 中，Git 只会包含被还原的合并之后的修改。`c8` 包含 `m'` 和 `c7`，但是不包含 `c4` 中的内容。三方合并时认为 `c4` 中的内容已经被删除，此时合并只会包含 `c7` 的内容。
 
 ```mermaid
 ---
@@ -994,7 +1036,7 @@ gitGraph
    merge develop id:"c8"
 ```
 
-解决办法是撤销`m'`，然后再去合并，`m''`相当于`m`。
+解决办法是撤销 `m'`，然后再去合并，`m''` 相当于 `m`。
 
 ```mermaid
 ---
@@ -1018,7 +1060,7 @@ gitGraph
    merge develop id:"c8"
 ```
 
-通常情况下`git revert`会自动创建一些提交，并带有提交日志消息，说明哪些提交被恢复，如果不想创建多个 revert 提交，可以使用`-n`选项，这将提交还原到工作目录和索引所需的更改，但不进行提交。
+通常情况下 `git revert` 会自动创建一些提交，并带有提交日志消息，说明哪些提交被恢复，如果不想创建多个 revert 提交，可以使用 `-n` 选项，这将提交还原到工作目录和索引所需的更改，但不进行提交。
 
 ```shell
 # 撤销前三次的提交，但是不会创建revert提交，此时只会改变暂存区和工作目录
@@ -1027,10 +1069,10 @@ git revert -n HEAD~2..HEAD
 
 ## 挑选工作流
 
-可以使用`git cherry-pick`来对其他分支中提交进行挑选，Git 中的拣选类似于对特定的某次提交的变基，它会提取该提交的补丁，之后尝试将其重新应用到当前分支上。
+可以使用 `git cherry-pick` 来对其他分支中提交进行挑选，Git 中的拣选类似于对特定的某次提交的变基，它会提取该提交的补丁，之后尝试将其重新应用到当前分支上。
 
 ```shell
-git cherry-pick [option] <commit-ish>...
+git cherry-pick <commit-ish...>
 ```
 
 ```mermaid
@@ -1085,15 +1127,13 @@ git blame -L <n,m> <file>
 git submodule add <url> [dir]
 ```
 
-同时会创建`.gitmodules`文件，该文件保存了项目的URL与已经拉取的本地目录之间的映射。
+同时会创建 `.gitmodules` 文件，该文件保存了项目的 URL 与已经拉取的本地目录之间的映射。
 
 ```
 [submodule "xxx"]
   path = xxx
   url = https://github.com/user_name/xxx
 ```
-
-> 由于`.gitmodules`文件中的URL是人们首先尝试克隆拉取的地方，可以根据自己的需要来修改，通过`git config submodule.xxx.url <url>`命令来修改这个选项的值。
 
 克隆一个含有子模块的项目，默认会包含该子模块目录，但其中还没有任何文件，必须要运行两个命令：
 
@@ -1104,25 +1144,17 @@ git submodule init
 git submodule update
 ```
 
-更简单的方法，给`git clone`传递`--recursive`选项，会自动初始化并更新仓库中的每一个子模块。
-
-## 配置 SSH 连接
-
-默认情况下，用户的SSH密钥存储在其`~/.ssh`目录下，以`id_dsa`或`id_rsa`命名的文件，其中一个带有 `.pub`扩展名的文件是公钥，另一个则是私钥。如果找不到这样的文件（或者根本没有`.ssh`目录），你可以通过运行`ssh-keygen`程序来创建它们。
-
-```shell
-ssh-keygen [-C comment]
-```
-
-首先会确认密钥的存储位置，然后它会要求你输入两次密钥口令。如果你不想在使用密钥时输入口令，将其留空即可。
+> [!NOTE]
+>
+> 更简单的方法，给 `git clone` 传递 `--recursive` 选项，会自动初始化并更新仓库中的每一个子模块。
 
 ## 凭证存储
 
 如果使用的 SSH 方式连接远端，并且设置了一个没有口令的密钥，这样就可以在不输入用户名和密码的情况下安全的传输数据。然而这对 HTTP 协议来说是不可能的，每一个连接都是需要用户名和密码的。Git 拥有一个凭证系统来处理这个事情，选项如下：
 
 - 默认模式所有都不缓存，每一连接都会询问用户名和密码。
-- `cache`模式会将凭证存放在内存中一段时间，密码永远不会被存储在磁盘中，并且在15分钟后从内存中清除。
-- `store`模式会将凭证用明文的形式存放在磁盘中，并且永不过期。这种方式的缺点是你的密码是用明文的方式存放在你的`home`目录下。
+- `cache` 模式会将凭证存放在内存中一段时间，密码永远不会被存储在磁盘中，并且在15分钟后从内存中清除。
+- `store` 模式会将凭证用明文的形式存放在磁盘中，并且永不过期。这种方式的缺点是密码是用明文的方式存放在 `~/.git-credentials` 中。可以使用 `--file <path>` 参数，可以自定义存放密码的文件路径。
 
 设置 Git 来选择上述的一种方式：
 
@@ -1130,94 +1162,12 @@ ssh-keygen [-C comment]
 git config --global credential.helper cache
 ```
 
-> `store`模式可以接受一个`--file <path>`参数，可以自定义存放密码的文件路径（默认是 `~/.git-credentials` ）。
-
-# 自定义 Git
-
-## 配置 Git
-
-设置默认的文本编辑器，如果未配置，Git 会使用操作系统默认的文本编辑器：
-
-```shell
-git config --global core.editor <editor_name>
-```
-
-Git 会忽略文件名大小写，如果需要设置不忽略，修改当前仓库设置：
-
-```shell
-git config core.ignorecase false
-```
-
-如果把此项指定为你的系统上某个文件的路径，当你提交的时候，Git 会使用该文件的内容作为提交的默认信息，即提交模板：
-
-```shell
-git config --global commit.template <file_path>
-```
-
-当`core.autocrlf`为`true`时，会在提交时转换为 LF，检出时根据当前系统决定转换为 CRLF，或者不转换。为`false`时，在提交和检出时不做任何转换。
-
-```shell
-git config --global core.autocrlf true
-```
-
-`core.safecrlf`设置为`true`时，如果文件混用 LF 和 CRLF 则拒绝提交。如果不设置，默认提交包含混合换行符的文件时给出警告。
-
-```shell
-git config --global core.safecrlf true
-```
-
 ## Git 钩子
 
 Git 能在特定的重要动作发生时触发自定义脚本，有两组这样的钩子：客户端和服务端的。客户端钩子由诸如提交和合并这样的操作所调用，而服务器端钩子作用于诸如接收被推送的提交这样的联网操作。
 
-钩子都被存储在 Git 目录下的 hooks 子目录中，即`.git/hooks`中，当使用`git init`初始化一个版本库时，Git 默认会在这个目录中放置一些示例脚本，这些脚本除了本身可以被调用外，它们还透露了被触发时所传入的参数。 所有的示例都是 shell 脚本，其中一些还混杂了 Perl 代码，不过，任何正确命名的可执行脚本都可以正常使用。把一个正确命名且可执行的文件放入 Git 目录下的 hooks 子目录中，即可激活该钩子脚本，这样一来，它就能被 Git 调用。
+钩子都被存储在 Git 目录下的 hooks 子目录中，即 `.git/hooks` 中，当使用 `git init` 初始化一个版本库时，Git 默认会在这个目录中放置一些示例脚本，这些脚本除了本身可以被调用外，它们还透露了被触发时所传入的参数。 所有的示例都是 shell 脚本，其中一些还混杂了 Perl 代码，不过，任何正确命名的可执行脚本都可以正常使用。把一个正确命名且可执行的文件放入 Git 目录下的 hooks 子目录中，即可激活该钩子脚本，这样一来，它就能被 Git 调用。
 
-> 这些示例的名字都是以`.sample`结尾，如果你想启用它们，得先移除这个后缀。
-
-# Git 内部原理
-
-当在一个新目录或已有目录执行`git init`时，Git 会创建一个`.git`目录，这个目录包含了几乎所有 Git 存储和操作的对象，如若想备份或复制一个版本库，只需把这个目录拷贝至另一处即可。对于一个全新的`git init`版本库，默认结构如下：
-
-```
-└─┬ HEAD
-  ├ config
-  ├ description
-  ├ hooks
-  ├ info
-  ├ objects
-  └ refs
-```
-
-- HEAD 文件指示当前被检出的分支。
-- config 文件包含项目特有的配置选项。
-- description 文件仅供 GitWeb 程序使用。
-- hooks 目录包含客户端或服务端的钩子脚本。
-- info 目录包含一个全局性排除文件，用以放置那些不希望被记录在 .gitignore 文件中的忽略模式。
-- objects 目录存储所有的数据内容。
-- refs 目录存储指向分支的提交对象的指针。
-
-## Git 对象
-
-Git 的核心部分是一个简单的键值对数据库，你可以向该数据库插入任意类型的内容，它会返回一个键值，通过该键值可以在任意时刻再次检索该内容，可以通过底层命令`git hash-object`来演示上述效果，该命令输出一个长度为 40 个字符的校验和，这是一个 SHA-1 哈希值，一个将待存储的数据外加一个头部信息一起做 SHA-1 校验运算而得的校验和。然后可以在 objects 目录下看到一个文件，这就是开始时 Git 存储内容的方式，一个文件对应一条内容，SHA-1 校验和为文件命名，校验和的前两个字符用于命名子目录，余下的 38 个字符则用作文件名。
-
-```shell
-# -w选项表示存储到数据库中，--stdin表示从标准输入流中读取
-echo 'test content' | git hash-object -w --stdin
-```
-
-可以通过`git cat-file`命令从 Git 那里取回数据：
-
-```shell
-# -p选项可以指示该命令自动判断内容的类型，并为显示格式友好的内容
-git cat-file -p <sha-1>
-```
-
-## Git 引用
-
-## 包文件
-
-## 引用规格
-
-## 传输协议
-
-## 维护与数据恢复
+> [!NOTE]
+>
+> 这些示例的名字都是以 `.sample` 结尾，如果你想启用它们，得先移除这个后缀。
