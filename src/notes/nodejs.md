@@ -392,14 +392,12 @@ exports.name = 'exported';
 
 ```javascript [index.mjs]
 import { name } from './cjs.cjs';
-console.log(name);
-// Prints: 'exported'
+console.log(name); // Prints: 'exported'
 
-import { default as cjs } from './cjs';
+import { default as cjs } from './cjs.cjs';
 // Identical to the above
 import cjs from './cjs.cjs';
-console.log(cjs);
-// Prints: { name: 'exported' }
+console.log(cjs); // Prints: { name: 'exported' }
 
 import * as m from './cjs.cjs';
 console.log(m);
