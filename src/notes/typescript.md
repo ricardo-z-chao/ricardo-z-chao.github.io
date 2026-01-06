@@ -14,10 +14,8 @@ title: TypeScript
    npm install -D tslib
    # 可选，Node.js声明文件
    npm install -D @types/node
-   # 可选，使用TypeScript/JavaScript对象来编写类型安全的样式，并动态生成CSS
-   npm install typestyle
    ```
-
+   
 2. 配置 `tsconfig.json`
 
    ```
@@ -32,25 +30,13 @@ title: TypeScript
    ```json
    {
      "extends": "@tsconfig/bases/node-lts"
-     "compilerOptions": {
-       "rootDir": "src",
-       "outDir": "lib",
-       "module": "esnext",
-       "target": "esnext",
-       "lib": ["esnext"],
-   		"sourceMap": true,
-       "declaration": true,
-       "declarationMap": true,
-       "esModuleInterop": true,
-       "resolveJsonModule": true
-     }
    }
    ```
-
+   
    > [!NOTE]
    >
    > 如果需要其他适用于不同环境的通用配置，详细请看[这里](https://github.com/tsconfig/bases)。
-
+   
 3. `package.json` 配置
 
    ```json
