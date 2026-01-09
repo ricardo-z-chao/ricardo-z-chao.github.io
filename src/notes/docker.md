@@ -210,7 +210,7 @@ docker logs <CONTAINER>
 > - `-v`：创建一个数据卷，多次使用可以创建多个数据卷。
 > - `-e`：指定环境变量。
 
-更快捷的方式，使用 `docker run` 直接从一个镜像中创建和运行一个容器，这个命令首先检查本地是否存在指定镜像，不存在就在公共仓库下载，然后使用镜像创建并启动一个容器，分配文件系统，并在只读的镜像层外面挂载一层可读可写层，从宿主主机配置的网桥接口中桥接一个虚拟接口到容器中，从地址池配置一个 IP 地址给容器，执行完用户指定的应用程序，执行完后容器被终止。
+更快捷的方式是使用 `docker run` 直接从一个镜像中创建和运行一个容器，这个命令首先检查本地是否存在指定镜像，不存在就在公共仓库下载，然后使用镜像创建并启动一个容器，分配文件系统，并在只读的镜像层外面挂载一层可读可写层，从宿主主机配置的网桥接口中桥接一个虚拟接口到容器中，从地址池配置一个 IP 地址给容器，执行完用户指定的应用程序，执行完后容器被终止。
 
 ```shell
 docker run [OPTIONS] <IMAGE> [COMMAND] [ARG...]
@@ -223,31 +223,29 @@ docker run [OPTIONS] <IMAGE> [COMMAND] [ARG...]
 有时候需要进入容器进行操作，这时可以使用  `docker attach` 或者 `docker exec` 命令。使用 `attach` 时，当多个窗口同时 `attach` 到一个容器的时候，所有窗口都会同步显示，当某个窗口因命令阻塞时，其他窗口就无法执行操作了。更常见的是使用 `docker exec`。
 
 ```shell
-docker attach CONTAINER
-docker exec <CONTAINER> <COMMAND> [ARG...]
+docker attach <CONTAINER>
+docker exec -it <CONTAINER> <COMMAND> [ARG...]
 ```
 
 可以基于已有的容器来创建一个新的镜像：
 
 ```shell
 # -a 表示作者信息，-m 表示提交信息，-p 表示创建时暂停容器运行
-docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+docker commit [OPTIONS] <CONTAINER> [REPOSITORY[:TAG]]
 ```
 
 若要导入或者导出容器快照到本地镜像库中：
 
 ```shell
 # 导出容器文件系统作为 tar 归档文件，-o 表示输出到文件代替标准输出流
-docker export [OPTIONS] CONTAINER
+docker export [OPTIONS] <CONTAINER>
 # 导入容器
 docker import [OPTIONS] file|URL|- [REPOSITORY[:TAG]]
 ```
 
-> [!NOTE]
+> [!CAUTION]
 >
-> `docker commit` 用于将一个容器的状态保存为一个新的镜像，当你在一个容器内进行了某些修改（例如安装软件、更改配置等），可以通过这个命令把这些修改保存到一个新的镜像中。当你需要基于现有容器快速创建包含特定修改的新镜像时这种方式非常有用。不过需要注意的是，这种方式创建的镜像缺乏透明性和可重复性，因为没有明确记录构建过程中的具体操作步骤。
->
->  `docker export` 仅导出容器当前文件系统的快照，不保存容器的历史记录或元数据。
+> `docker commit` 用于将一个容器的状态保存为一个新的镜像，当你在一个容器内进行了某些修改（例如安装软件、更改配置等），可以通过这个命令把这些修改保存到一个新的镜像中。当你需要基于现有容器快速创建包含特定修改的新镜像时这种方式非常有用。`docker export` 仅导出容器当前文件系统的快照，不保存容器的历史记录或元数据。
 
 # 数据管理
 
@@ -262,61 +260,55 @@ docker import [OPTIONS] file|URL|- [REPOSITORY[:TAG]]
 - 对数据卷的更新不会影响容器。
 - 数据卷会一直存在，直到没有容器使用。
 
-数据卷的使用类似于 Linux 下对目录或者文件进行 mount 操作。
+可以使用 `docker volume` 命令来对数据卷进行管理：
 
-1. 卷映射
+```shell
+# 查看所有数据卷
+docker volume ls
+# 创建数据卷
+docker volume create <volume>
+# 删除所有未使用的的本地数据卷
+docker volume prune
+# 显示数据卷详细信息
+docker volume inspect <volume>
+# 删除数据卷
+docker volume rm <volume>
+```
 
-   在使用 `docker run` 命令时可以使用 `-v` 选项来创建一个数据卷，多次使用 `-v` 可以创建多个数据卷。
+在使用 `docker run` 命令时可以使用 `-v` 选项来创建一个数据卷，指定数据卷要挂载到容器的哪个目录下：
 
-   ```shell
-   # 创建一个数据卷挂载到容器的 /dir 目录
-   docker run -v /dir IMAGE
-   ```
+```shell
+docker run -d -v <mount_dir> <container> <exec>
+```
 
-   被创建的数据卷可以使用 `docker volume` 来管理：
+也可以指定挂载一个主机目录或者文件到容器中作为数据卷：
 
-   ```shell
-   # 查看所有数据卷
-   docker volume ls
-   # 创建数据卷
-   docker volume create [volume]
-   # 删除所有未使用的的本地数据卷
-   docker volume prune
-   # 显示数据卷详细信息
-   docker volume inspect <volume> [volume...]
-   # 删除数据卷
-   docker volume rm <volume> [volume...]
-   ```
+```shell
+docker run -v /src/webapp:/opt/webapp <container> <exec>
+docker run -v ~/.bash_history:/.bash_history <container> <exec>
+```
 
-2. 目录挂载
-
-   可以指定挂载一个本地已有的目录到容器中作为数据卷，本地目录的路径必须是绝对路径。
-
-   ```shell
-   # 
-   docker run -v /dir:/dir IMAGE
-   docker run -v ~/file:/file IMAGE
-   ```
-
-   
-
-> Docker 挂载数据卷的默认权限是读写`rw`，可以通过`ro`指定为只读，例如`-v /dir:/dir:ro`，这样容器内挂载的数据卷的数据就无法修改了。
+> [!NOTE]
+>
+> Docker 挂载数据卷的默认权限是读写 rw，可以通过 ro 指定为只读，例如 `-v /dir:/dir:ro`，这样容器内挂载的数据卷的数据就无法修改了。
 
 ## 数据卷容器
 
 如果需要在容器之间共享一些持续更新的数据，可以使用**数据卷容器**。数据卷容器就是一个普通的容器，专门用它提供数据卷供其他容器挂载使用。
 
 ```shell
-# 创建一个数据卷容器dbdata，并在其中创建一个数据卷挂载到/dbdata中
+# 创建一个数据卷容器dbdata，并在其中创建一个数据卷
 docker run -it -v /dbdata --name dbdata ubuntu
 # 在其他容器中来挂载dbdata容器中的数据卷
 docker run -it --volumes-from dbdata --name db1 ubuntu
 docker run -it --volumes-from dbdata --name db2 ubuntu
 ```
 
-此时容器 db1 和 db2 都挂载同一个数据卷到相同的`/dbdata`目录，这三个容器任何一方在该目录下的写入，其他容器都可以看见。
+此时容器 db1 和 db2 都挂载同一个数据卷到相同的 `/dbdata` 目录，这三个容器任何一方在该目录下的写入，其他容器都可以看见。
 
-如果删除了挂载的容器，数据卷并不会被自动删除，如果要删除一个数据卷，必须在删除最后一个还挂载着它的容器时使用`docker rm -v CONTAINER`来指定同时删除关联的容器。
+> [!NOTE]
+>
+> 如果删除了挂载的容器，数据卷并不会被自动删除，如果要删除一个数据卷，必须在删除最后一个还挂载着它的容器时使用 `docker rm -v <container>` 来指定同时删除关联的容器。
 
 # 网络配置
 
@@ -342,57 +334,4 @@ docker run -it --volumes-from dbdata --name db2 ubuntu
 # 列出容器的端口映射
 docker port CONTAINER
 ```
-
-# Dockerfile
-
-Dockerfile 由一行行命令语句组成，`#`开头的为注释行。一般 Dockerfile 分为四部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令。
-
-
-
-## 指令
-
-指令的一般格式为`INSTRUCTION arguments`，指令如下：
-
-1. `FROM`
-
-    ```dockerfile
-    FROM <image>
-    ...
-    FROM <image>:<tag>
-    ```
-
-    第一条指令必须为`FROM`，如果在同一个 Dockerfile 中创建多个镜像时，可以使用多个 From 指令（每个镜像一次）。
-
-2. `MAINTAINER`
-
-    ```dockerfile
-    # 指定维护者信息
-    MAINTAINER <name>
-    ```
-
-3. `RUN`
-
-4. `CMD`
-
-5. `EXPOSE`
-
-6. `ENV`
-
-7. `ADD`
-
-8. `COPY`
-
-9. `ENTRYPOINT`
-
-10. `VOLUME`
-
-11. `USER`
-
-12. `WORKDIR`
-
-13. `ONBUILD`
-
-
-
-## 创建镜像
 
