@@ -335,3 +335,55 @@ docker port <container>
 >
 > 可以使用 udp 标记来指定 udp 端口。例如`5000:5000/udp`。
 
+# Docker Build
+
+通过 `docker build` 命令可以构建自己的 Docker 镜像，这个命令会根据 [Dockerfile](https://docs.docker.com/reference/dockerfile/) 和构建上下文来构建镜像。构建上下文是可以访问的文件集合，可以是本地目录，也可以是远程的 Git 仓库的 URL。
+
+```shell
+# -t选项表示指定镜像的名称和标签
+docker build -t <iamges>:<tag> <path>
+```
+
+> [!NOTE]
+>
+> 通过使用 `.dockerignore` 文件可以从构建上下文中排除指定的文件或者目录。
+
+## Dockerfile
+
+| 指令                                                         | 含义                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [`FROM <image> `](https://docs.docker.com/reference/dockerfile/#from) | 定义镜像的基础。                                             |
+| [`RUN <command>`](https://docs.docker.com/reference/dockerfile/#run) | 这个指令会执行命令并且在镜像的顶层添加一个新的 layer。       |
+| [`ENTRYPOINT <command>`](https://docs.docker.com/reference/dockerfile/#entrypoint) |                                                              |
+| [`WORKDIR <directory>`](https://docs.docker.com/reference/dockerfile/#workdir) | 为 `RUN`、`CMD`、`ENTRYPOINT`、`COPY`、`ADD` 指令设置工作目录。 |
+| [`COPY <src> <dest>`](https://docs.docker.com/reference/dockerfile/#copy) | 从 `<src>` 路径复制文件或者目录到容器的文件系统下的 `<dest>` 目录。 |
+| [`CMD <command>`](https://docs.docker.com/reference/dockerfile/#cmd) | 这个指定用于定义启动容器时默认的命令，每个Dockerfile 只能有一个 `CMD`。 |
+|                                                              |                                                              |
+
+> [!NOTE]
+>
+> 详细命令含义请看：https://docs.docker.com/reference/dockerfile/#overview
+
+`RUN`、`CMD` 和 `ENTRYPOINT` 指令有两种可能的形式：
+
+- `INSTRUCTION ["executable","param1","param2"]` (exec form)
+- `INSTRUCTION command param1 param2` (shell form)
+
+exec form 会被解析成 JSON 数组，这意味着你必须在词语中使用双引号，而不是单引号。使用 exec form 不会自动调用命令 shell，这意味着正常的 shell 处理，例如变量替换不会发生。例如 `RUN [ "echo", "$HOME"]` 中 `$HOME` 不能被替换。而 shell form 将始终使用 命令 shell。
+
+
+
+## 多平台镜像
+
+多平台镜像的结构与单平台镜像不同。单平台镜像包含一个 Manifest 指向单个配置和一个 layer 集合，多平台镜像包含一个 Manifest 列表，指向多个 Manifest，每个 Manifest 指向不同的配置和 layer 集合。当发布一个多平台镜像到 Docker Registry 中，Registry 会存储 Manifest 列表和所有的 Manifest，当拉取一个镜像时，Docker 会根据主机的架构自动选择对应的 Manifest 来下载。
+
+![single-vs-multiplatform-image](../figures/single-vs-multiplatform-image.webp)
+
+构建多平台镜像：
+
+```shell
+docker buildx build --platform <arch> <path>
+```
+
+# Docker Compose
+
