@@ -765,16 +765,18 @@ doSomething()
 - 已兑现（*fulfilled*）：意味着操作成功完成。
 - 已拒绝（*rejected*）：意味着操作失败。
 
-> 一个 *fulfilled* 或 *rejected* 的`Promise`都会被称为 *settled*。
+> [!NOTE]
+>
+> 一个 *fulfilled* 或 *rejected* 的 Promise 都会被称为 *settled*。
 
 ```mermaid
 flowchart LR
 	subgraph "new Promise(executor)"
-    pending[state: pending \n result: undefined]:::pending
+    pending[state: pending <br> result: undefined]:::pending
     end
     subgraph "settled"
-    fulfilled[state: fulfilled \n result: value]:::fulfilled
-    rejected[state: rejected \n result: error]:::rejected
+    fulfilled[state: fulfilled <br> result: value]:::fulfilled
+    rejected[state: rejected <br> result: error]:::rejected
     end
     pending -- resolve(value) --> fulfilled
     pending -- reject(error) --> rejected
@@ -785,47 +787,29 @@ flowchart LR
 
 ## Promise 构造函数
 
-当通过`new`关键字调用 Promise 构造函数时，它会返回一个 Promise 对象：
+当通过 `new` 关键字调用 Promise 构造函数时，它会返回一个 Promise 对象，它还会生成一对相应的 `resolve()` 和 `reject()` 函数，它们与 Promise 对象“绑定”在一起。
 
 ```javascript
-new Promise(executor)
+let promise = new Promise(function(resolve, reject) {
+  ...
+});
 ```
 
-`executor`是在构造函数中执行的函数，它接收两个函数作为参数：`resolve`和`reject`。`excutor`函数的返回值会被忽略，`executor` 函数中的`return`语句仅影响控制流程，调整函数某个部分是否执行，但不会影响 Promise 的兑现值，如果`executor`函数退出，且未来不可能调用`resolve`或`reject`，那么 Promise 将永远保持 *pending* 状态。`executor`中抛出的任何错误都会导致 Promise 被拒绝。
+`executor()` 是在构造函数中执行的函数，它接收两个函数作为参数：`resolve()` 和 `reject()`。`excutor()` 函数的返回值会被忽略，`executor()` 函数中的 `return` 语句仅影响控制流程，调整函数某个部分是否执行，但不会影响 Promise 的兑现值，如果 `executor()` 函数退出，且未来不可能调用 `resolve()` 或 `reject()`，那么 Promise 将永远保持 *pending* 状态。`executor()` 中抛出的任何错误都会导致 Promise 被拒绝。
 
-```javascript
-function executor(resolve, reject) {
-    // executor
-}
-```
+`executor()` 中的代码有机会执行某些操作，异步任务的最终完成通过 `resolve()` 或 `reject()` 引起的副作用与 Promise 实例进行通信，这个副作用让 Promise 对象变为 *settled* 状态。如果先调用 `resolve()`，则 Promise 变为 *fulfilled* 状态，如果先调用 `reject()`，则 Promise 变为 *reject* 状态。
 
- Promise 流程概述：
+一旦 Promise 为 *settled*，它会异步的调用任何通过 `then()`、`catch()` 或 `finally()` 关联的进一步处理程序，最终的兑现值或拒绝原因在调用时作为输入参数传给兑现和拒绝处理程序。
 
-1. 在构造函数生成新的 Promise 对象时，它还会生成一对相应的`resolve`和`reject`函数，它们与 Promise 对象“绑定”在一起。
-2. `executor`是同步调用的，在构造 Promise 时立即调用，并将`resolve`和`reject`函数作为传入参数。
-3. `executor`中的代码有机会执行某些操作，异步任务的最终完成通过`resolve`或`reject`引起的副作用与 Promise 实例进行通信，这个副作用让 Promise 对象变为 *settled* 状态。
-    - 如果先调用`resolve`，则 Promise 变为 *fulfilled* 状态，如果先调用`reject`，则 Promise 变为 *reject* 状态。
-    - 一旦`resolve`或`reject`其中的一个被调用， Promise 将保持 *settled* 状态。只有第一次调用`resolve`或`reject`会影响 Promise 的最终状态，随后对任一函数的调用都不能改变 Promise 的状态。
-    - 如果`executor`抛出错误，则 Promise 为 *reject* 状态，但是如果`resolve`或`reject`中的一个已经被调用（因此 Promise 已经变为 *settled* 状态），则忽略该错误。
-    - 一旦 Promise 为 *settled*，它会异步的调用任何通过`then()`、`catch()`或`finally()`关联的进一步处理程序，最终的兑现值或拒绝原因在调用时作为输入参数传给兑现和拒绝处理程序。
+### resolve
 
-### Thenable
-
-在 Promise 成为 JavaScript 语言的一部分之前，JavaScript 生态系统已经有了多种 Promise 实现。尽管它们在内部的表示方式不同，但至少所有类 Promise 的对象都实现了 Thenable 接口。thenable 对象实现了`then()`方法，该方法被调用时需要传入两个回调函数，一个用于 Promise 被兑现时调用`onFulfilled`，一个用于 Promise 被拒绝时调用`onRejected`。 Promise 也是 thenable 对象。
-
-```javascript
-promise.then(onFulfilled, onRejected)
-```
-
-### Resolve
-
-`resovle`函数具有以下行为：
+`resovle()` 函数具有以下行为：
 
 - 如果它被调用时传入了新建的 Promise 对象本身（即它所“绑定”的 Promise 对象），则 Promise 对象会被拒绝。
 
-- 如果它使用一个非 thenable 的值（基本类型，或一个没有`then`属性或`then`属性不可调用的对象），则该 Promise 对象会被立即以该值兑现。
+- 如果它使用一个非 Thenable 的值（基本类型或者一个没有 `then` 属性或 `then` 属性不可调用的对象），则该 Promise 对象会被立即以该值兑现。
 
-- 如果它被调用时传入了一个 thenable 对象（包括另一个 Promise 实例），则该 thenable 对象的`then`方法将被保存并在未来被调用（它总是异步调用）。`then()`方法将被调用并传入两个回调函数，这两个函数的行为与传递给`executor`函数的`resolve`和`reject`函数完全相同。如果调用`then()`方法时出现错误，则当前的 Promise 对象会被拒绝并抛出这个错误。
+- 如果它被调用时传入了一个 Thenable 对象（包括另一个 Promise 实例），则该 Thenable 对象的 `then()` 方法将被保存并在未来被调用（它总是异步调用）。`then()` 方法将被调用并传入两个回调函数，这两个函数的行为与传递给 `executor()` 函数的 `resolve()` 和 `reject()` 函数完全相同。如果调用 `then()` 方法时出现错误，则当前的 Promise 对象会被拒绝并抛出这个错误。
 
     ```javascript
     new Promise((resolve, reject) => {
@@ -846,23 +830,37 @@ promise.then(onFulfilled, onRejected)
     });
     ```
 
-    
+
+### reject
+
+## Thenable
+
+在 Promise 成为 JavaScript 语言的一部分之前，JavaScript 生态系统已经有了多种 Promise 实现。尽管它们在内部的表示方式不同，但至少所有类 Promise 的对象都实现了 Thenable 接口。Thenable 对象实现了`then()` 方法，该方法被调用时需要传入两个回调函数，一个用于 Promise 被兑现时调用 `onFulfilled`，一个用于 Promise 被拒绝时调用 `onRejected`。 Promise 也是 thenable 对象。
+
+```javascript
+promise.then(onFulfilled, onRejected){
+  ...
+}
+```
+
+> [!NOTE]
+>
+> 更多内容参考 [Promises/A+ 规范](https://promisesaplus.com/)。
 
 ## Promise 链式调用
 
-
+- `then()`
+- `catch()`
+- `finally()`
 
 ## Promise 静态方法
 
-`Promise`类提供了四个静态方法来促进异步任务的并发
+`Promise` 类提供了四个静态方法来促进异步任务的并发：
 
-### `Promise.all()`
-
-### `Promise.allSettled()`
-
-### `Promise.any()`
-
-### `Promise.race()`
+1. `Promise.all()`
+2. `Promise.allSettled()`
+3. `Promise.any()`
+4. `Promise.race()`
 
 
 
