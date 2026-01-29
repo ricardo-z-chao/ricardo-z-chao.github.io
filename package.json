@@ -19,5 +19,6 @@
   "devDependencies": {
     "@types/node": "^24.0.3",
     "vitepress": "^1.6.3"
-  }
+  },
+  "packageManager": "pnpm@10.28.1"
 }
