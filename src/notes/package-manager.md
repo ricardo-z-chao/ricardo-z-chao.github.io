@@ -2,6 +2,19 @@
 title: 包管理器
 ---
 
+# 安装
+
+使用 Corepack 来安装包管理器，这个 Node.js 脚本通常会随着 Node.js 一起发布。
+
+```shell
+# 启用corepack
+corepack enable
+# 安装包管理器
+corepack install <-g,--global> [... name[@<version>]]
+# 使用指定的包管理器
+corepack use <name[@<version>]>
+```
+
 # NPM
 
 ## 本地模式和全局模式
@@ -68,6 +81,14 @@ npm config set <key>=<value> [-L|--location <global|user|project>]
 npm config set registry=<url>
 ```
 
+写入默认的配置：
+
+```shell
+npm config set init-author-email="username@example.com"
+npm config set init-author-name="username"
+npm config set init-license="MIT"
+```
+
 ### package.json
 
 可以将 `package.json` 文件添加到您的包中，以便其他人轻松管理和安装。发布到仓库的包必须包含 `package.json` 文件，一个`package.json` 文件包括：
@@ -103,15 +124,15 @@ npm config set registry=<url>
 npm init [-y]
 # 创建 scoped 包
 npm init --scope=@scope-name
+# 使用一个模版来创建
+npm init <package-spec>
 ```
 
-可以为 init 命令设置默认配置选项：
+如果使用模版来创建一个包，通常这个模版包的名称必须是 `create-` 开头，然后会通过 `npm exec create-<package-spec>` 来执行其中的可执行文件。
 
-```shell
-npm config set init-author-email="username@example.com"
-npm config set init-author-name="username"
-npm config set init-license="MIT"
-```
+> [!NOTE]
+>
+> `npm init` 又可以写成 `npm create`。
 
 ## 发布包
 
@@ -299,7 +320,23 @@ npm run env
 
 ## 运行包
 
-此命令允许从本地安装或远程获取的 npm 包运行任意命令，与通过 `npm run` 运行类似。
+通常一个包可以有一个或者多个可执行命令，可以通过在 `package.json` 中的 `bin` 属性可以定义包中的可执行命令的集合：
+
+```json
+{
+  "bin": {
+    "myapp": "bin/cli.js"
+  }
+}
+```
+
+当包被安装在全局时，`bin` 属性中指定的文件将会被链接到全局的二进制可执行目录中，因此可以直接通过名称来执行。当包被安装在本地时，可以通过 `npm exec <name>` 来执行。
+
+> [!WARNING]
+>
+> 被引用的文件必须要以 `#!/usr/bin/env node` 开头，来表示查找 Node.js 环境来执行这个文件。
+
+`npx` 命令允许运行从本地安装或远程获取的 npm 包中的可执行文件，与通过 `npm exec` 运行类似。
 
 ```shell
 npx <cmd> [args...]
@@ -409,7 +446,7 @@ node_modules
 .pnpm/<name>@<version>/node_modules/<name>
 ```
 
-## 运行脚本
+## 命令
 
 - `pnpm run`
 
@@ -458,5 +495,14 @@ pnpm 支持 `workspace:` 协议，当使用此协议时，pnpm 将拒绝解析�
     "cowsay": "^1.5.0",
     "world": "workspace:^"
 }
+```
+
+monorepo 安装依赖：
+
+```shell
+# 仅在workspace中安装
+pnpm add -w <package>
+# 在子包中安装
+pnpm --filter <package_selector> add <package>
 ```
 
