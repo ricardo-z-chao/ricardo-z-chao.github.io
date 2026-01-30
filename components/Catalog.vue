@@ -7,17 +7,17 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import { data } from '../catalog.data.ts'
-import { Category } from '../constants/category-const.mts';
+import { onMounted, ref } from "vue";
+import { data } from "../catalog.data.ts";
+import { Category } from "../constants/category-const.mts";
 
 const props = defineProps({
-    category: Category,
-})
+  category: Category,
+});
 
 let contents = ref([]);
 
 onMounted(() => {
-    contents.value = data.filter(e => e.url.startsWith(`/${props.category}`));
+  contents.value = data.filter((e) => e.url.startsWith(`/${props.category}`));
 });
 </script>

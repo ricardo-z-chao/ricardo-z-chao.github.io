@@ -19,7 +19,7 @@ export default defineConfig({
       lazyLoading: true,
     },
     config: (md) => {
-      md.use(mermaidPlugin).use(markdownItMathjax3)
+      md.use(mermaidPlugin).use(markdownItMathjax3);
     },
   },
   themeConfig: {
@@ -40,5 +40,5 @@ export default defineConfig({
       message: `Released under the <a href="${GITHUB_PAGES[0]}/introduction/blob/master/LICENSE">MIT License</a>.`,
       copyright: `Copyright © 2025-present <a href="${GITHUB_PAGES[0]}">Ricardo.Z.Chao</a>`,
     },
-  }
+  },
 });

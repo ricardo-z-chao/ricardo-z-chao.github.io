@@ -3,7 +3,7 @@
   "files": ["catalog.data.ts", "config.ts"],
   "include": ["plugins/*.ts", "types/*.ts", "constants/*.ts"],
   "compilerOptions": {
-    "types": ["node","markdown-it"],
+    "types": ["node", "markdown-it"],
 
     /* Linting */
     "noImplicitAny": true,
