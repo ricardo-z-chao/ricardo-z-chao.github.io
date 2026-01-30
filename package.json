@@ -8,7 +8,9 @@
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "typecheck": "tsc",
+    "format": "prettier --write --cache ."
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -17,7 +19,11 @@
     "mermaid": "^11.5.0"
   },
   "devDependencies": {
+    "@vue/tsconfig": "^0.8.1",
+    "@types/markdown-it": "^14.1.0",
     "@types/node": "^24.0.3",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
     "vitepress": "^1.6.3"
   },
   "packageManager": "pnpm@10.28.1"
