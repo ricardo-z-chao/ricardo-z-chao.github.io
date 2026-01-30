@@ -5,6 +5,11 @@
   "description": "个人博客",
   "author": "ricardo <ricardo.z.chao@gmail.com>",
   "license": "MIT",
+  "packageManager": "pnpm@10.28.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ricardo-z-chao/ricardo-z-chao.github.io.git"
+  },
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
@@ -25,6 +30,5 @@
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "vitepress": "^1.6.3"
-  },
-  "packageManager": "pnpm@10.28.1"
+  }
 }
