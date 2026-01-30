@@ -2,16 +2,22 @@
   <div v-html="svgRef"></div>
 </template>
 
-<script setup ts>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import mermaid from "mermaid";
 
 const props = defineProps({
-  id: String,
-  code: String,
+  id: {
+    type: String,
+    required: true,
+  },
+  code: {
+    type: String,
+    required: true,
+  },
 });
 
-const render = async (id, code) => {
+const render = async (id: string, code: string) => {
   mermaid.initialize({ startOnLoad: false });
   const { svg } = await mermaid.render(id, code);
   return svg;

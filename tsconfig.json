@@ -1,10 +1,14 @@
 {
   "extends": "@vue/tsconfig",
-  "files": ["catalog.data.ts", "config.ts"],
-  "include": ["plugins/*.ts", "types/*.ts", "constants/*.ts"],
+  "include": ["types/*.ts", ".vitepress/**/*.ts", "components/*.vue"],
   "compilerOptions": {
     "types": ["node", "markdown-it"],
-
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [".vitepress/*"],
+      "@components/*": ["components/*"]
+    },
+    "allowJs": true,
     /* Linting */
     "noImplicitAny": true,
     "strictNullChecks": true

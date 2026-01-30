@@ -6,18 +6,20 @@
   </ul>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { data } from "../catalog.data.ts";
-import { Category } from "../constants/category-const.mts";
+import { data as catalog } from "@/catalog.data";
+import type { ContentData } from "vitepress";
 
-const props = defineProps({
-  category: Category,
-});
+const props = defineProps<{
+  category: Category;
+}>();
 
-let contents = ref([]);
+let contents = ref([] as ContentData[]);
 
 onMounted(() => {
-  contents.value = data.filter((e) => e.url.startsWith(`/${props.category}`));
+  contents.value = catalog.filter((e) =>
+    e.url.startsWith(`/${props.category}`),
+  );
 });
 </script>

@@ -1,25 +1,12 @@
 import type { DefaultTheme } from "vitepress";
-import { Category, CATEGORYS } from "./constants/category-const";
+import { categoryInfo } from "./category";
 import matter from "gray-matter";
 import { readdirSync, readFileSync } from "node:fs";
 
-export function navConfig(): DefaultTheme.NavItemWithLink[] {
-  let config: DefaultTheme.NavItemWithLink[] = [];
-  for (const category in CATEGORYS) {
-    const key = category as keyof typeof CATEGORYS;
-    const categoryDetail: CategoryDetail = CATEGORYS[key];
-    config.push({
-      text: categoryDetail.name,
-      link: categoryDetail.route,
-    });
-  }
-  return config;
-}
-
-export function sidebarConfig(): DefaultTheme.SidebarMulti {
+function sidebarConfig(): DefaultTheme.SidebarMulti {
   let config: DefaultTheme.SidebarMulti = {};
   let categoryMap: Map<Category, DefaultTheme.SidebarItem[]> = new Map();
-  for (const category in CATEGORYS) {
+  for (const category in categoryInfo) {
     const enumCategory = category as Category;
     let files = readdirSync(`src/${enumCategory}`);
     for (const file of files) {
@@ -45,3 +32,7 @@ export function sidebarConfig(): DefaultTheme.SidebarMulti {
   }
   return config;
 }
+
+let config = sidebarConfig();
+
+export default config;

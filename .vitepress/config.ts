@@ -1,8 +1,10 @@
 import { defineConfig } from "vitepress";
 import mermaidPlugin from "../plugins/markdown-it-mermaid";
 import markdownItMathjax3 from "markdown-it-mathjax3";
-import * as config from "../config";
-import { GITHUB_PAGES } from "../constants/info-const";
+import navConfig from "./nav-config";
+import sidebarConfig from "./sidebar-config";
+import { githubURL } from "./const";
+import path from "node:path";
 
 export default defineConfig({
   title: "我的主页",
@@ -12,6 +14,12 @@ export default defineConfig({
   vite: {
     build: {
       assetsInlineLimit: 0,
+    },
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname),
+        "@components": path.resolve(__dirname, "../components"),
+      },
     },
   },
   markdown: {
@@ -23,8 +31,8 @@ export default defineConfig({
     },
   },
   themeConfig: {
-    nav: config.navConfig(),
-    sidebar: config.sidebarConfig(),
+    nav: navConfig,
+    sidebar: sidebarConfig,
     search: {
       provider: "local",
     },
@@ -35,10 +43,10 @@ export default defineConfig({
       level: [1, 3],
     },
     logo: "/favicon.ico",
-    socialLinks: [{ icon: "github", link: GITHUB_PAGES[0] }],
+    socialLinks: [{ icon: "github", link: githubURL }],
     footer: {
-      message: `Released under the <a href="${GITHUB_PAGES[0]}/introduction/blob/master/LICENSE">MIT License</a>.`,
-      copyright: `Copyright © 2025-present <a href="${GITHUB_PAGES[0]}">Ricardo.Z.Chao</a>`,
+      message: `Released under the <a href="${githubURL}/introduction/blob/master/LICENSE">MIT License</a>.`,
+      copyright: `Copyright © 2025-present <a href="${githubURL}">Ricardo.Z.Chao</a>`,
     },
   },
 });

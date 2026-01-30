@@ -1,6 +1,5 @@
-import MarkdownIt from "markdown-it";
-
-export default function mermaidPlugin(md: MarkdownIt): void {
+// TODO 独立化这个插件
+export default function mermaidPlugin(md) {
   const fence = md.renderer.rules.fence?.bind(md.renderer.rules);
   md.renderer.rules.fence = (tokens, idx, options, env, self) => {
     const token = tokens[idx];

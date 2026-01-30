@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import Catalog from '../../components/Catalog.vue'
-import { Category } from '../../constants/category-const.mts'
+import Catalog from '@components/Catalog.vue'
+import { categoryInfo } from '@/category'
 </script>
 
 # 笔记目录
 
-<Catalog :category="Category.NOTE"/>
+<Catalog :category="categoryInfo.notes"/>
