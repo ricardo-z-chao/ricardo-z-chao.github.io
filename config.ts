@@ -1,5 +1,5 @@
 import { DefaultTheme } from "vitepress";
-import { Category, CATEGORYS } from './constants/category-const.mts';
+import { Category, CATEGORYS } from './constants/category-const';
 import matter from 'gray-matter';
 import { readdirSync, readFileSync } from "node:fs";
 
