@@ -1,4 +1,4 @@
-import { DefaultTheme } from "vitepress";
+import type { DefaultTheme } from "vitepress";
 import { Category, CATEGORYS } from './constants/category-const';
 import matter from 'gray-matter';
 import { readdirSync, readFileSync } from "node:fs";
@@ -6,7 +6,8 @@ import { readdirSync, readFileSync } from "node:fs";
 export function navConfig(): DefaultTheme.NavItemWithLink[] {
     let config: DefaultTheme.NavItemWithLink[] = [];
     for (const category in CATEGORYS) {
-        const categoryDetail: CategoryDetail = CATEGORYS[category];
+        const key = category as keyof typeof CATEGORYS;
+        const categoryDetail: CategoryDetail = CATEGORYS[key];
         config.push({
             text: categoryDetail.name,
             link: categoryDetail.route,

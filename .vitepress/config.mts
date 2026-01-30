@@ -1,8 +1,8 @@
 import { defineConfig } from "vitepress";
 import mermaidPlugin from "../plugins/markdown-it-mermaid";
-import markdownItMathjax3 from 'markdown-it-mathjax3';
-import * as config from "../config.mts";
-import { GITHUB_PAGES } from "../constants/info-const.mjs";
+import markdownItMathjax3 from "markdown-it-mathjax3";
+import * as config from "../config";
+import { GITHUB_PAGES } from "../constants/info-const";
 
 export default defineConfig({
   title: "我的主页",
