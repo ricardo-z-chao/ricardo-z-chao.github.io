@@ -1,4 +1,7 @@
-import { createContentLoader } from "vitepress";
+import { createContentLoader, type ContentData } from "vitepress";
+
+declare const data: ContentData[];
+export { data };
 
 export default createContentLoader(["notes/*.md", "articles/*.md"], {
   transform: (rawData) =>
