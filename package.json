@@ -15,9 +15,9 @@
   },
   "scripts": {
     "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
+    "docs:build": "vue-tsc && vitepress build",
     "docs:preview": "vitepress preview",
-    "typecheck": "tsc",
+    "typecheck": "vue-tsc",
     "format": "prettier --write --cache ."
   },
   "dependencies": {
@@ -33,6 +33,7 @@
     "@vue/tsconfig": "^0.8.1",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
-    "vitepress": "^1.6.3"
+    "vitepress": "^1.6.3",
+    "vue-tsc": "^3.2.4"
   }
 }
