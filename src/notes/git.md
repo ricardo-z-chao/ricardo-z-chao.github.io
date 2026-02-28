@@ -779,6 +779,23 @@ git stash apply stash@{n}
 git stash branch <branch>
 ```
 
+## 工作树
+
+当已经工作一段时间后，这时候想要切换到另一个分支来修复紧急的 Bug，然而当前的工作目录处于如此混乱的状态（有新的、被移动的、被删除的文件等），通常会使用 `git stash` 来暂时存储修改。更好的方法是创建了一个临时的链接工作树来进行紧急修复，完成后将其删除，然后继续你先前的工作。
+
+```shell
+# 创建一个新的工作树的同时自动创建一个新的分支，其名称是路径的最后一个组成部分
+git worktree add <path>
+# 创建一个新的工作树到指定的路径，同时制定一个新的分支
+git worktree add <new-branch> <path>
+# 列出工作树
+git worktree list
+# 移动工作树到指定的目录
+git worktree move <worktree> <new-path>
+# 删除工作树
+git worktree remove [-f] <worktree>
+```
+
 ## 清理
 
 使用 `git clean` 命令，会从当前目录开始递归删除未跟踪的文件（不包括忽略的文件）来清理工作树，如果想要同时移除被忽略的文件，可以加上 `-x` 选项。默认 `git clean` 不会递归到未跟踪的目录中以免删除太多，指定 `-d` 以使其也递归到此类目录中。

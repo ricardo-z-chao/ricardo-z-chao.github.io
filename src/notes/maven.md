@@ -19,7 +19,7 @@ maven
 - **conf**：该目录包含 `setting.xml` 文件，这个文件可以全局定制 Maven 的行为。一般将这个文件复制到 `~/.m2` 目录下，然后修改文件，在用户范围内定制 Maven 的行为。前一个 `settings.xml` 也称为全局设置，后一个 `settings.xml` 称为用户设置，如果这两个文件都存在，它们的内容将被合并，用户设置的 `settings.xml` 将占主导地位。
 - **lib**：该目录包含了所有 Maven 运行时需要的类库。
 
-有时出于安全因素，需要使用通过安全认证的代理访问网络，为 Maven 配置 HTTP 代理让它正常访问外部仓库，修改 `~/.m2/setting.xml`文件，配置如下：
+有时出于安全因素，需要使用通过安全认证的代理访问网络，为 Maven 配置 HTTP 代理让它正常访问外部仓库，修改 `~/.m2/setting.xml` 文件，配置如下：
 
 ```xml
 <proxies>
@@ -776,9 +776,7 @@ Maven 工具链为项目提供了一种指定用于构建项目的 JDK（或其�
     </build>
     ```
 
-# 灵活的构建
-
-## Maven 属性
+# Maven 属性
 
 通过 `<properties>` 元素用户可以自定义一个或者多个 Maven 属性，然后在 POM 的其他地方使用 `${property_name}` 的方式引用该属性。Maven 属性分类如下：
 
@@ -822,7 +820,7 @@ Maven 工具链为项目提供了一种指定用于构建项目的 JDK（或其�
 
   用户使用 `settings.` 开头的属性引用 `settings.xml` 文件中 XML 元素的值，如 `${settings.localRepository}` 指向用户本地仓库。
 
-## 资源过滤
+# 资源过滤
 
 有些项目会在 `src/main/resources` 目录下放置数据库配置文件，如果测试人员进行测试的时候往往需要使用不同的数据库。为了应对环境的变化，首先要使用 Maven 属性将这些会发生变化的部分提取出来，使用 Maven 属性来代替：
 
@@ -865,7 +863,7 @@ database.jdbc.password = #{db.password}
 </build>
 ```
 
-## Profile
+# Profile
 
 不同环境的构建可能是不同的，为了能让构建在各个环境下方便的移植，Maven 引入了 profile 概念，profile 能够在构建的时候修改 POM 的一个子集，或者添加额外配置元素，用户可以使用很多方式激活 profile，以实现构建在不同环境下的移植。
 
@@ -888,87 +886,4 @@ database.jdbc.password = #{db.password}
         </properties>
     </profile>
 </profiles>
-```
-
-# 编写插件
-
-编写插件的步骤如下：
-
-1. 使用 maven-archetype-plugin 来创建一个插件项目。插件本身也是 Maven 项目，它的 `packaging` 必须是 `maven-plugin`。
-
-2. 为插件编写目标，每个插件都必须包含一个或者多个目标，Maven 称之为 Mojo（*Maven Old Java Object*），编写插件的时候必须提供一个或多个继承自 `AbstractMojo` 的类。
-
-3. 为目标提供配置点。大部分 Maven 插件及其目标都是可配置的，因此在编写 Mojo 的时候需要注意提供可配置的参数。
-
-4. 编写代码实现目标的行为。
-
-5. 错误处理及日志。
-
-6. 测试插件。
-
-## Mojo Archetype
-
-创建一个新的插件工程，可以在命令行使用 `maven-archetype-plugin` 来生成一个插件工程：
-
-```shell
-mvn archetype:generate -DarchetypeArtifactId=maven-archetype-plugin
-```
-
-> [!NOTE]
-> 通常 Maven 插件命名为 `${prefix}-maven-plugin`。
-
-## 定义 Mojo
-
-一个示例项目的 pom 文件：
-
-```xml
-<project>
-  <modelVersion>4.0.0</modelVersion>
-
-  <groupId>sample.plugin</groupId>
-  <artifactId>hello-maven-plugin</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <!-- This must be set to "maven-plugin" -->
-  <packaging>maven-plugin</packaging>
-
-  <name>Sample Parameter-less Maven Plugin</name>
-
-  <properties>
-    <maven-plugin-tools.version>3.12.0</maven-plugin-tools.version>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>3.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <!-- dependencies to annotations -->
-    <dependency>
-      <groupId>org.apache.maven.plugin-tools</groupId>
-      <artifactId>maven-plugin-annotations</artifactId>
-      <version>${maven-plugin-tools.version}</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-</project>
-```
-
-一个简单的 Mojo：
-
-```java
-package sample.plugin;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
-
-@Mojo(name = "sayhi")
-public class GreetingMojo extends AbstractMojo {
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        getLog().info("Hello, world.");
-    }
-}
 ```

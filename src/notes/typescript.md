@@ -337,3 +337,35 @@ assert.strictEqual(add(1, 1), 2);
 然后使用 `--build` 选项运行 `tsc` 会自动查找 `tsconfig.json` 中的所有被引用的项目进行**增量编译**，这种编译模式下只编译更新过的源文件。
 
 通过使用项目引用，从引用的项目中导入模块将直接加载其输出声明文件，而不是再是通过源码。通过分成多个项目，可以大大提高类型检查和编译的速度，减少使用编辑器时的内存使用，并改善程序逻辑分组的执行。
+
+# Vue 集成 Typescript
+
+可以使用适配于 Vue 项目的配置文件：
+
+```shell
+pnpm add -D @vue/tsconfig
+```
+
+然后在 `tsconfig.json` 中继承该配置：
+
+```json
+{
+  "extends": "@vue/tsconfig",
+}
+```
+
+TypeScript 不能识别 `.vue` 文件，如果是基于 vue-cli 生成的项目，会自动生成 `shims-vue.d.ts` 文件来告诉 TypeScript 识别 `.vue` 文件：
+
+```typescript
+declare module "*.vue" {
+  import Vue from "vue";
+  export default Vue;
+}
+```
+
+或者可以使用 `vue-tsc` ，`vue-tsc` 是对 TypeScript 自身命令行界面 `tsc` 的一个封装。它的工作方式基本和 `tsc` 一致，除了 TypeScript 文件，它还支持 Vue 的单文件组件。
+
+```shell
+npm install -D vue-tsc
+```
+
