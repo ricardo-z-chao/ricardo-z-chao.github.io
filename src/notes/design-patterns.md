@@ -198,4 +198,4 @@ MongoDB ..|> Database
 
 # 设计模式
 
-具体设计模式请看 https://refactoringguru.cn/design-patterns/catalog。
+具体设计模式请看[这里](https://refactoringguru.cn/design-patterns/catalog)。
