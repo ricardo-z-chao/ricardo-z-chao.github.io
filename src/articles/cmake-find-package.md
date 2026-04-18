@@ -14,7 +14,7 @@ CMake 提供了许多方法来将外部依赖合并到构建中，项目和用�
 
 ## 配置模式
 
-在这个模式下，查找由包本身提供的配置文件，其中定义了 CMake 目标、变量和命令。通常 `<PackageName>` 是 `find_package()` 命令的第一个参数，甚至可能是唯一的参数，也可以使用 `NAMES` 选项指定替代名称：
+在这个模式下，查找由包本身提供的配置文件（由 CMake 自动构建，在安装过程中可以随着包一起安装到系统中），其中定义了 CMake 目标、变量和命令。通常 `<PackageName>` 是 `find_package()` 命令的第一个参数，甚至可能是唯一的参数，也可以使用 `NAMES` 选项指定替代名称：
 
 ```
 find_package(SomeThing
@@ -38,7 +38,7 @@ find_package(SomeThing
 
 并不是所有的包都支持 CMake，许多依赖没有提供支持配置模式所需的文件，在这种模式下，可以提供一个 `Find<SomePackage>.cmake` 文件，CMake 将搜索由 `CMAKE_MODULE_PATH` 变量指定的路径来定位查找这个文件，查找模块文件通常不由包本身提供。
 
-```
+```cmake
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/module")
 ```
 
@@ -167,6 +167,3 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 ```
-
-
-

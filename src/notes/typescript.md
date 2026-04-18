@@ -350,7 +350,7 @@ pnpm add -D @vue/tsconfig
 
 ```json
 {
-  "extends": "@vue/tsconfig",
+  "extends": "@vue/tsconfig/tsconfig.dom.json"
 }
 ```
 
@@ -367,5 +367,21 @@ declare module "*.vue" {
 
 ```shell
 npm install -D vue-tsc
+```
+
+对于 CSS 文件，TypeScript 同样不能正确识别，需要添加额外的配置来解决：
+
+```typescript
+import "@/styles/index.css"; // 不能识别css文件
+```
+
+可以添加 `env.d.ts` 文件，并在其中配置：
+
+```typescript
+// CSS
+declare module '*.css' {}
+declare module '*.scss' {}
+declare module '*.sass' {}
+declare module '*.less' {}
 ```
 
