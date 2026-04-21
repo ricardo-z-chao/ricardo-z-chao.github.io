@@ -35,12 +35,11 @@ npm prefix [-g]
 
 1. 本地模式
 
-    使用本地模式安装时，`{prefix}` 路径为当前目录，将包安装到当前目录的 `node_modules` 子目录下，Node.js 的 `require` 在加载模块时会尝试搜寻 `node_modules` 子目录，因此使用 npm 本地模式安装的包可以直接被引用。可执行文件被链接到 `node_modules/.bin`。
+   使用本地模式安装时，`{prefix}` 路径为当前目录，将包安装到当前目录的 `node_modules` 子目录下，Node.js 的 `require` 在加载模块时会尝试搜寻 `node_modules` 子目录，因此使用 npm 本地模式安装的包可以直接被引用。可执行文件被链接到 `node_modules/.bin`。
 
 2. 全局模式
 
-    在全局模式下，Unix 系统中包安装到 `{prefix}/lib/node_modules`，Windows 系统中的安装到 `{prefix}/node_modules`。可执行文件在 Unix 中链接到 `{prefix}/bin`，在 Windows 中直接链接到 `{prefix}`。使用全局模式安装的包并不能直接在 JavaScript 文件中用 `require` 获得，因为 `require` 不会搜索全局安装路径。
-
+   在全局模式下，Unix 系统中包安装到 `{prefix}/lib/node_modules`，Windows 系统中的安装到 `{prefix}/node_modules`。可执行文件在 Unix 中链接到 `{prefix}/bin`，在 Windows 中直接链接到 `{prefix}`。使用全局模式安装的包并不能直接在 JavaScript 文件中用 `require` 获得，因为 `require` 不会搜索全局安装路径。
 
 |   模式   | 可通过require使用 | 注册PATH |
 | :------: | ----------------- | -------- |
@@ -145,11 +144,11 @@ npm publish [--access <restricted|public>]
 
 每次对自己的 npm 包进行重大更新时，建议在遵循语义版本规范的 `package.json` 文件中发布一个新版本的包，其中包含更新的版本号。遵循语义版本规范可以帮助依赖你代码的其他开发人员了解给定版本中的更改程度，并在必要时调整自己的代码。
 
-| Code status                               | Stage         | Rule                                                         | Example version |
-| ----------------------------------------- | ------------- | ------------------------------------------------------------ | --------------- |
-| First release                             | New product   | Start with 1.0.0                                             | 1.0.0           |
-| Backward compatible bug fixes             | Patch release | Increment the third digit                                    | 1.0.1           |
-| Backward compatible new features          | Minor release | Increment the middle digit and reset last digit to zero      | 1.1.0           |
+| Code status                               | Stage         | Rule                                                               | Example version |
+| ----------------------------------------- | ------------- | ------------------------------------------------------------------ | --------------- |
+| First release                             | New product   | Start with 1.0.0                                                   | 1.0.0           |
+| Backward compatible bug fixes             | Patch release | Increment the third digit                                          | 1.0.1           |
+| Backward compatible new features          | Minor release | Increment the middle digit and reset last digit to zero            | 1.1.0           |
 | Changes that break backward compatibility | Major release | Increment the first digit and reset middle and last digits to zero | 2.0.0           |
 
 可以在包的 `package.json` 文件中指定包可以从依赖项接受哪些更新类型。例如，要指定可接受的版本范围，请使用以下语法：
@@ -221,59 +220,59 @@ npm update <name>
 
 - `-P, --save-prod`
 
-    安装到 `dependencies` 项中，这是默认选项。
+  安装到 `dependencies` 项中，这是默认选项。
 
 - `-D, --save-dev`
 
-    安装到 `devDependencies` 项中。用于本地环境开发的依赖包，这些包只在开发环境下使用，生产环境不会使用到这些包。
+  安装到 `devDependencies` 项中。用于本地环境开发的依赖包，这些包只在开发环境下使用，生产环境不会使用到这些包。
 
 - `-O, --save-optional`
 
-    安装到 `optionalDependencies` 项中。当希望某些依赖即使下载失败或者没有找到时，项目依然可以正常运行，就可以把这些依赖放在 `optionalDependencies` 对象中。
+  安装到 `optionalDependencies` 项中。当希望某些依赖即使下载失败或者没有找到时，项目依然可以正常运行，就可以把这些依赖放在 `optionalDependencies` 对象中。
 
 - `--no-save`
 
-    不保存到 `dependencies` 项中。
+  不保存到 `dependencies` 项中。
 
 - `-E, --save-exact`
 
-    保存的依赖项将使用精确的版本配置，而不是使用 npm 的默认 semver 范围操作符。
+  保存的依赖项将使用精确的版本配置，而不是使用 npm 的默认 semver 范围操作符。
 
 - `-B, --save-bundle`
 
-    安装到 `bundleDependencies` 项中。当使用了非仓库中的依赖，他人无法获取，需要指定为 `bundleDependencies`，然后可以通过`npm pack` 将这些依赖打包成 `.tgz` 压缩包。
+  安装到 `bundleDependencies` 项中。当使用了非仓库中的依赖，他人无法获取，需要指定为 `bundleDependencies`，然后可以通过`npm pack` 将这些依赖打包成 `.tgz` 压缩包。
 
 - `--save-peer`
 
-    安装到 `peerDependencies` 项中，即**对等依赖**。插件包通常被设计为和特定版本的主包一起使用，大多数插件实际上从不依赖于它们的主包，例如 grunt 插件从不这也做 `require('grunt')`，即使插件确实将其主包作为依赖项，下载的副本也不会被使用，因此可能会出现插件包与其主包不兼容的情况发生。对于确实具有这种直接依赖关系的插件，可能是由于主包提供实用程序 API。在插件的 `package.json` 中指定依赖关系也会导致依赖关系树包含主包的多个副本，例如：
+  安装到 `peerDependencies` 项中，即**对等依赖**。插件包通常被设计为和特定版本的主包一起使用，大多数插件实际上从不依赖于它们的主包，例如 grunt 插件从不这也做 `require('grunt')`，即使插件确实将其主包作为依赖项，下载的副本也不会被使用，因此可能会出现插件包与其主包不兼容的情况发生。对于确实具有这种直接依赖关系的插件，可能是由于主包提供实用程序 API。在插件的 `package.json` 中指定依赖关系也会导致依赖关系树包含主包的多个副本，例如：
 
-    ```json
-    {
-      "dependencies": {
-        "winston": "0.6.2",
-        "winston-mail": "0.2.3"
-      }
+  ```json
+  {
+    "dependencies": {
+      "winston": "0.6.2",
+      "winston-mail": "0.2.3"
     }
-    ```
-    
-    ```
-    ├── winston@0.6.2
-    └─┬ winston-mail@0.2.3
-      └── winston@0.5.11
-    ```
-    
-    对于这种问题，可以使用**对等依赖**来解决，即编写插件时将主包添加到对等依赖中，当安装 chai-as-promised 时，chai 包将随其一起安装，如果以后安装另一个只适用于 0.x 版本的 Chai 插件，将得到一个错误。
-    
-    ```json
-    {
-      "name": "chai-as-promised",
-      "peerDependencies": {
-        "chai": "1.x"
-      }
+  }
+  ```
+
+  ```
+  ├── winston@0.6.2
+  └─┬ winston-mail@0.2.3
+    └── winston@0.5.11
+  ```
+
+  对于这种问题，可以使用**对等依赖**来解决，即编写插件时将主包添加到对等依赖中，当安装 chai-as-promised 时，chai 包将随其一起安装，如果以后安装另一个只适用于 0.x 版本的 Chai 插件，将得到一个错误。
+
+  ```json
+  {
+    "name": "chai-as-promised",
+    "peerDependencies": {
+      "chai": "1.x"
     }
-    ```
-    
-    对等依赖的要求，不像那些常规依赖，应该宽松，不应该将对等依赖项锁定到特定的修补程序版本。
+  }
+  ```
+
+  对等依赖的要求，不像那些常规依赖，应该宽松，不应该将对等依赖项锁定到特定的修补程序版本。
 
 ## 运行脚本
 
@@ -475,13 +474,13 @@ pnpm 内置了对 monorepo 的支持，可以创建一个 Workspace 来将多个
 ```yaml
 packages:
   # 指定根目录直接子目录中的包
-  - 'my-app'
+  - "my-app"
   # packages/ 直接子目录中的所有包
-  - 'packages/*'
+  - "packages/*"
   # components/ 子目录中的所有嵌套的包
-  - 'components/**'
+  - "components/**"
   # 排除测试目录中的包
-  - '!**/test/**'
+  - "!**/test/**"
 ```
 
 > [!NOTE]
@@ -505,4 +504,3 @@ pnpm add -w <package>
 # 在子包中安装
 pnpm --filter <package_selector> add <package>
 ```
-

@@ -59,7 +59,7 @@ conda update conda
   # 查看环境列表
   conda env list
   ```
-  
+
 - 激活环境
 
   ```shell
@@ -151,7 +151,7 @@ conda config --remove <key> <value>
 
 # pip
 
-pip 是 Python 的包管理程序，可以使用 pip 从 PyPI（*The Python Package Index*）或者其他的仓库安装包，调用 pip 可以直接在命令行输入 pip，或者使用 `python -m pip` 来调用。常用命令如下：
+pip 是 Python 的包管理程序，可以使用 pip 从 PyPI（_The Python Package Index_）或者其他的仓库安装包，调用 pip 可以直接在命令行输入 pip，或者使用 `python -m pip` 来调用。常用命令如下：
 
 ```shell
 # 常用pip命令
@@ -193,7 +193,6 @@ python -m sysconfig
 > [!TIP]
 >
 > 用户方案对所有的 Python 发行版都支持特定于用户的替代安装位置，可以使用 `pip install --user` 来开启，可以使用环境变量 `PYTHONUSERBASE` 来自定义安装位置，这个值会改变 `site.USER_BASE` 的值。
-
 
 # 虚拟环境
 
@@ -237,7 +236,7 @@ source workspace/bin/activate	#在Unix或MacOS中
 
 - 交互模式
 
-  安装 Python 后在命令行输入 `python`，启动交互式解释器，可以使用解释器来运行 Python 代码，也就是**交互模式**（*interactive mode*），常用命令如下：
+  安装 Python 后在命令行输入 `python`，启动交互式解释器，可以使用解释器来运行 Python 代码，也就是**交互模式**（_interactive mode_），常用命令如下：
 
   ```shell
   python -V				# 输出版本号
@@ -248,7 +247,7 @@ source workspace/bin/activate	#在Unix或MacOS中
 
 - 脚本模式
 
-  当要编写很多代码时，使用交互解释器就不方便了，这时可以使用**脚本模式**（*script mode*）运行解释器并执行 Python 代码，Python 脚本以 `.py` 为后缀，在命令行输入 `python filename` 即可运行 Python 脚本。
+  当要编写很多代码时，使用交互解释器就不方便了，这时可以使用**脚本模式**（_script mode_）运行解释器并执行 Python 代码，Python 脚本以 `.py` 为后缀，在命令行输入 `python filename` 即可运行 Python 脚本。
 
   ```shell
   python main.py

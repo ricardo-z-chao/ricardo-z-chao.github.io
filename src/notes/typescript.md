@@ -59,7 +59,7 @@ title: TypeScript
    ```json
    {
      "scripts": {
-       "build": "tsc",
+       "build": "tsc"
      }
    }
    ```
@@ -122,7 +122,7 @@ npm install -D tsx
     "extends": "./configs/base"
   }
   ```
-  
+
 - references
 
   见[项目引用](#项目引用)。
@@ -137,7 +137,7 @@ npm install -D tsx
   {
     "compilerOptions": {
       "typeRoots": ["./typings", "./node_modules/@types"],
-      "types": ["node", "jest", "express"] 
+      "types": ["node", "jest", "express"]
     }
   }
   ```
@@ -215,20 +215,20 @@ npm install -D tsx
     }
   }
   ```
-  
+
   > [!NOTE]
   >
   > 这两个属性通常要配合其他打包工具来使用，因为 TypeScript 不会编译映射的路径。
-  
+
 - module, moduleResolution
 
   module 用来设置程序的模块系统类型，常用的值：
 
-  | module     | 含义                                                         |
-  | ---------- | ------------------------------------------------------------ |
-  | `nodenext` | 支持最新稳定版的 Node.js 的模块系统。                        |
+  | module     | 含义                                                                                           |
+  | ---------- | ---------------------------------------------------------------------------------------------- |
+  | `nodenext` | 支持最新稳定版的 Node.js 的模块系统。                                                          |
   | `preserve` | 不转换模块语法，每个单个导入或导出语句的格式会被保留，而不是被强制采用单一格式来进行整个编译。 |
-  | `esnext`   | 支持最新的 ES 模块语法。                                     |
+  | `esnext`   | 支持最新的 ES 模块语法。                                                                       |
 
   > [!NOTE]
   >
@@ -239,7 +239,7 @@ npm install -D tsx
 - esModuleInterop
 
   这个选项用于解决 CommonJS 和 ESM 之间的互操作性问题，在编译时会添加辅助函数来解决模块系统兼容性问题。
-  
+
 - noImplicitAny, strictNullChecks
 
   对于新项目，应该启用这两个选项。noImplicitAny 表示必须显式的设置变量的类型。strictNullChecks 用于控制 `null` 和 `undefined` 在每种类型中是否被允许。
@@ -270,14 +270,14 @@ my-project/
 ```
 
 ```ts [src/math.ts]
-export function add(a:number, b: number):number {
-    return a + b;
+export function add(a: number, b: number): number {
+  return a + b;
 }
 ```
 
 ```ts [test/math-tests.ts]
-import * as assert from 'assert';
-import { add } from '../src/math'
+import * as assert from "assert";
+import { add } from "../src/math";
 
 assert.strictEqual(add(1, 1), 2);
 ```
@@ -379,9 +379,8 @@ import "@/styles/index.css"; // 不能识别css文件
 
 ```typescript
 // CSS
-declare module '*.css' {}
-declare module '*.scss' {}
-declare module '*.sass' {}
-declare module '*.less' {}
+declare module "*.css" {}
+declare module "*.scss" {}
+declare module "*.sass" {}
+declare module "*.less" {}
 ```
-

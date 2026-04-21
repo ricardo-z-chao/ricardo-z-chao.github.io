@@ -9,9 +9,9 @@ title: NodeJS
 CommonJS 模块是为 Node.js 打包 JavaScript 代码的原始方式，在 Node.js 中每一个文件都被视为一个独立的模块。上下文提供了 `exports` 对象用于导出当前模块的方法或者变量，将方法挂载到 `exports` 对象即可导出定义的方法或者变量。在模块中还有一个 `module` 对象，表示的是模块自身，而 `exports` 是 `module` 的属性。
 
 ```javascript
-exports.add = function(a, b){
-	return a + b;
-}
+exports.add = function (a, b) {
+  return a + b;
+};
 ```
 
 可以使用 `require()` 方法来导入一个模块：
@@ -22,7 +22,7 @@ let math = require("math");
 
 使用 `require()` 时，如果没有通过路径来指示一个文件（`/`、`../`、`./`），模块将尝试从核心模块，或者从 `node_modules` 文件夹加载。当文件夹作为一个模块时，`require()` 将会尝试加载文件夹根目录中 `package.json` 文件中 `main` 字段指定的文件，如果没有 `package.json` 文件或者没有 `main` 入口点，Node.js 将会尝试加载文件夹根目录中的 `index.js` 或者 `index.node` 文件。
 
-如果 `require()` 指定的文件名没有查找到，Node.js 将会依次尝试加上  `.js`、`.json`、`.node` 文件扩展名来继续查找，`.json` 文件将会被解析为 JSON 文本文件，`.node` 文件会被解释为已经编译过的插件模块通过 `process.dlopen()` 来执行。
+如果 `require()` 指定的文件名没有查找到，Node.js 将会依次尝试加上 `.js`、`.json`、`.node` 文件扩展名来继续查找，`.json` 文件将会被解析为 JSON 文本文件，`.node` 文件会被解释为已经编译过的插件模块通过 `process.dlopen()` 来执行。
 
 > [!NOTE]
 >
@@ -33,8 +33,8 @@ let math = require("math");
 在执行模块的代码之前，Node.js 将用一个看起来像如下的函数包装器包装它：
 
 ```javascript
-(function(exports, require, module, __filename, __dirname) {
-	// Module code actually lives in here
+(function (exports, require, module, __filename, __dirname) {
+  // Module code actually lives in here
 });
 ```
 
@@ -50,21 +50,21 @@ let math = require("math");
 ::: code-group
 
 ```javascript [a.js]
-console.log('a starting');
+console.log("a starting");
 exports.done = false;
-const b = require('./b.js');
-console.log('in a, b.done = %j', b.done);
+const b = require("./b.js");
+console.log("in a, b.done = %j", b.done);
 exports.done = true;
-console.log('a done');
+console.log("a done");
 ```
 
 ```javascript [b.js]
-console.log('b starting');
+console.log("b starting");
 exports.done = false;
-const a = require('./a.js');
-console.log('in b, a.done = %j', a.done);
+const a = require("./a.js");
+console.log("in b, a.done = %j", a.done);
 exports.done = true;
-console.log('b done');
+console.log("b done");
 ```
 
 ```javascript [main.js]
@@ -76,10 +76,10 @@ console.log('b done');
 // in a, b.done = true
 // a done
 // in main, a.done = true, b.done = true
-console.log('main starting');
-const a = require('./a.js');
-const b = require('./b.js');
-console.log('in main, a.done = %j, b.done = %j', a.done, b.done);
+console.log("main starting");
+const a = require("./a.js");
+const b = require("./b.js");
+console.log("in main, a.done = %j, b.done = %j", a.done, b.done);
 ```
 
 :::
@@ -99,7 +99,7 @@ console.log('in main, a.done = %j, b.done = %j', a.done, b.done);
 Node.js 有几个模块被编译为二进制，这些被称为内置模块并且存储在 `lib/` 文件夹中。可以使用 `node:` 前缀识别内置模块，在这种情况下，它绕过了缓存。可以使用 `module.builtinModules` 属性来查看内置模块的列表：
 
 ```javascript
-const builtin = require('node:module').builtinModules;
+const builtin = require("node:module").builtinModules;
 ```
 
 ## 使用 `require()` 加载 ESM
@@ -116,17 +116,16 @@ const builtin = require('node:module').builtinModules;
 
 ::: code-group
 
-
 ```javascript [distance.mjs]
-export function distance(a, b) { 
-  return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2); 
+export function distance(a, b) {
+  return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2);
 }
 ```
 
 ```javascript [point.mjs]
 export default class Point {
   constructor(x, y) { this.x = x; this.y = y; }
-} 
+}
 ```
 
 ```javascript [index.cjs]
@@ -158,7 +157,7 @@ export default class Point {
 
 // `distance` is lost to CommonJS consumers of this module, unless it's
 // added to `Point` as a static property.
-export function distance(a, b) { 
+export function distance(a, b) {
   return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2);
 }
 
@@ -240,7 +239,7 @@ ESM 的设计思想是尽量的**静态化**，使得编译时就能确定模块
 ```javascript
 // error
 if (x === 2) {
-  import something from './module.js';
+  import something from "./module.js";
 }
 ```
 
@@ -249,37 +248,37 @@ if (x === 2) {
 ```javascript
 // 不会报错，因为import命令是编译阶段执行的，在代码运行之前
 foo();
-import { foo } from 'my_module';
+import { foo } from "my_module";
 ```
 
 1. 具名导入
 
    ```javascript
    // 使用源模块中的原始名称进行导入
-   import { something } from './module.js';
+   import { something } from "./module.js";
    // 从源模块导入特定项目，并在导入时分配自定义名称
-   import { something as somethingElse } from './module.js';
+   import { something as somethingElse } from "./module.js";
    ```
 
 2. 命名空间导入
 
    ```javascript
    // 将源模块中的所有内容作为一个对象导入，如果存在默认导出，则可以通过 module.default 访问它
-   import * as module from './module.js';
+   import * as module from "./module.js";
    ```
 
 3. 默认导入
 
    ```javascript
    // 导入源模块的 default export
-   import something from './module.js';
+   import something from "./module.js";
    ```
 
 4. 无命名导入
 
    ```javascript
    // 加载模块代码，但不要使任何新对象可用
-   import './module.js';
+   import "./module.js";
    ```
 
 5. 动态导入
@@ -288,8 +287,8 @@ import { foo } from 'my_module';
 
    ```javascript
    // 使用动态导入API导入模块
-   import('./modules.js').then(({ default: DefaultExport, NamedExport }) => {
-   	// do something...
+   import("./modules.js").then(({ default: DefaultExport, NamedExport }) => {
+     // do something...
    });
    ```
 
@@ -308,9 +307,11 @@ import { foo } from 'my_module';
 `import` 属性是模块导入语句的内联语法，以便将更多信息与模块说明符一起传递。
 
 ```javascript
-import fooData from './foo.json' with { type: 'json' };
+import fooData from "./foo.json" with { type: "json" };
 
-const { default: barData } = await import('./bar.json', { with: { type: 'json' } });
+const { default: barData } = await import("./bar.json", {
+  with: { type: "json" },
+});
 ```
 
 > [!NOTE]
@@ -324,21 +325,20 @@ ES 模块被解析且被缓存为 URL，这意味着特殊字符必须是百分�
   如果用于解析它们的导入说明符具有不同的查询或片段，则模块将多次加载。
 
   ```javascript
-  import './foo.mjs?query=1'; // loads ./foo.mjs with query of "?query=1"
-  import './foo.mjs?query=2'; // loads ./foo.mjs with query of "?query=2"
+  import "./foo.mjs?query=1"; // loads ./foo.mjs with query of "?query=1"
+  import "./foo.mjs?query=2"; // loads ./foo.mjs with query of "?query=2"
   ```
 
 - `data:`
 
   支持导入以下 MIME 类型：
-
   - `text/javascript` for ES modules
   - `application/json` for JSON
   - `application/wasm` for Wasm
 
   ```javascript
   import 'data:text/javascript,console.log("hello!");';
-  import _ from 'data:application/json,"world!"' with { type: 'json' };
+  import _ from 'data:application/json,"world!"' with { type: "json" };
   ```
 
 - `node:`
@@ -346,7 +346,7 @@ ES 模块被解析且被缓存为 URL，这意味着特殊字符必须是百分�
   加载 Node.js 内置模块。
 
   ```javascript
-  import fs from 'node:fs/promises';
+  import fs from "node:fs/promises";
   ```
 
 ## `import.meta`
@@ -374,9 +374,9 @@ ES 模块被解析且被缓存为 URL，这意味着特殊字符必须是百分�
   `specifier` 表示相对于当前模块的说明符，返回值为说明符将解析到的绝对 URL 字符串。
 
   ```javascript
-  const dependencyAsset = import.meta.resolve('component-lib/asset.css');
+  const dependencyAsset = import.meta.resolve("component-lib/asset.css");
   // file:///app/node_modules/component-lib/asset.css
-  import.meta.resolve('./dep.js');
+  import.meta.resolve("./dep.js");
   // file:///app/dep.js
   ```
 
@@ -387,19 +387,19 @@ ES 模块被解析且被缓存为 URL，这意味着特殊字符必须是百分�
 ::: code-group
 
 ```javascript [cjs.cjs]
-exports.name = 'exported';
+exports.name = "exported";
 ```
 
 ```javascript [index.mjs]
-import { name } from './cjs.cjs';
+import { name } from "./cjs.cjs";
 console.log(name); // Prints: 'exported'
 
-import { default as cjs } from './cjs.cjs';
+import { default as cjs } from "./cjs.cjs";
 // Identical to the above
-import cjs from './cjs.cjs';
+import cjs from "./cjs.cjs";
 console.log(cjs); // Prints: { name: 'exported' }
 
-import * as m from './cjs.cjs';
+import * as m from "./cjs.cjs";
 console.log(m);
 // Prints:
 //   [Module] {
@@ -455,7 +455,7 @@ Node.js 将传递给 `node` 命令作为初始输入，或在被 `import` 语句
 
 ```javascript
 // Loads ./node_modules/es-module-package/src/submodule.js
-import submodule from 'es-module-package/submodule.js';
+import submodule from "es-module-package/submodule.js";
 ```
 
 **条件导出**提供了一种根据特定条件映射到不同路径的方法。例如当一个包同时提供了两种不同模块的导出：
@@ -539,10 +539,10 @@ flowchart TD
 
   ```javascript
   queueMicrotask(() => {
-    console.log('Microtask is executed');
+    console.log("Microtask is executed");
   });
-  
-  console.log('Synchronous task is executed');
+
+  console.log("Synchronous task is executed");
   ```
 
 - `process.nextTick()`
@@ -560,14 +560,14 @@ flowchart TD
   ```javascript
   // process.nextTick 的回调函数优先执行
   process.nextTick(() => {
-    console.log('process.nextTick callback executed.');
+    console.log("process.nextTick callback executed.");
   });
   setImmediate(() => {
-    console.log('setImmediate callback executed.');
+    console.log("setImmediate callback executed.");
   });
   ```
 
-- `setTimeout()` 和 `setInterval()` 
+- `setTimeout()` 和 `setInterval()`
 
   这两个函数与浏览器中的 API 是一致的，分别用于单次和多次定时执行任务。它们的实现原理与异步 I/O 比较类似，只是不需要 I/O 线程池的参与，它们创建的定时器会被插入到定时器观察者内部的一个红黑树中，每次执行 Tick 时会从该红黑树中迭代取出定时器对象，检查是否超过定时时间，如果超过就形成一个事件，然后对应的回调函数将立即执行。
 
@@ -589,7 +589,6 @@ flowchart TD
 
 理想情况下的异步 I/O 是应用程序发起非阻塞调用，无需通过轮询的方式，可以直接处理下一个任务，只需要在 I/O 完成后通过信号或者回调将数据传递给应用程序即可。
 
- 在 Linux/Unix 平台下，Node.js 使用了线程池来完成异步 I/O，而在 Windows 平台下则采用了 IOCP 实现了异步 I/O。由于不同平台的差异，Node.js 提供了 libuv 作为抽象封装层，使得所有平台兼容性判断都是由这一层来完成，保证了上层的 Node.js 与下层的实现之间相互独立。
+在 Linux/Unix 平台下，Node.js 使用了线程池来完成异步 I/O，而在 Windows 平台下则采用了 IOCP 实现了异步 I/O。由于不同平台的差异，Node.js 提供了 libuv 作为抽象封装层，使得所有平台兼容性判断都是由这一层来完成，保证了上层的 Node.js 与下层的实现之间相互独立。
 
- 对于一般的函数，由开发者自行调用，而对于 Node.js 中的异步 I/O 调用而言，回调函数不是由开发者来调用，从发起调用到内核执行完成 I/O 操作的过渡过程中，存在一种中间产物叫做**请求对象**。JavaScript 调用 Node.js 的 C++ 核心模块，并创建了一个请求对象，其中包含了 JavaScript 层传入的参数和回调函数，然后将这个请求对象传递给 libuv 层，libuv 接收这个请求，并将其放入一个工作队列，如果线程池有空闲线程，则唤醒一个线程来处理这个 I/O 请求。此时，Node.js 的主线程就可以继续处理其他 JavaScript 任务了，实现了异步。在工作线程完成 I/O 后会通知 libuv，然后会将之前创建的请求对象标记已完成并填充结果，放在一个完成队列中，事件循环会在 poll 阶段检查这个队列。
-
+对于一般的函数，由开发者自行调用，而对于 Node.js 中的异步 I/O 调用而言，回调函数不是由开发者来调用，从发起调用到内核执行完成 I/O 操作的过渡过程中，存在一种中间产物叫做**请求对象**。JavaScript 调用 Node.js 的 C++ 核心模块，并创建了一个请求对象，其中包含了 JavaScript 层传入的参数和回调函数，然后将这个请求对象传递给 libuv 层，libuv 接收这个请求，并将其放入一个工作队列，如果线程池有空闲线程，则唤醒一个线程来处理这个 I/O 请求。此时，Node.js 的主线程就可以继续处理其他 JavaScript 任务了，实现了异步。在工作线程完成 I/O 后会通知 libuv，然后会将之前创建的请求对象标记已完成并填充结果，放在一个完成队列中，事件循环会在 poll 阶段检查这个队列。

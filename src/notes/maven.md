@@ -98,7 +98,7 @@ mvn archetype:generate
 
 ## 坐标
 
-Maven 坐标（*coordinate*）为各种构件引入了秩序，任何一个构件必须明确自己的坐标，坐标元素包括：
+Maven 坐标（_coordinate_）为各种构件引入了秩序，任何一个构件必须明确自己的坐标，坐标元素包括：
 
 - groupId
 
@@ -120,7 +120,7 @@ Maven 坐标（*coordinate*）为各种构件引入了秩序，任何一个构�
 
   定义构建输出的一些附属构件，附属构构件与主构件对应，例如主构件是 `nexus-indexer-2.0.0.jar`，该项目可能会通过一些插件生成 `nexus-indexer-2.0.0-javador.jar` 等等附属构件。不能直接定义项目的附属构件，因为附属构件不是项目直接生成的。
 
-##  依赖配置
+## 依赖配置
 
 一个依赖声明可以包含如下的一些元素：
 
@@ -153,34 +153,34 @@ Maven 坐标（*coordinate*）为各种构件引入了秩序，任何一个构�
 
 |  scope   | 编译classpath | 测试classpath | 运行时classpath |
 | :------: | :-----------: | :-----------: | :-------------: |
-| compile  |       ✅       |       ✅       |        ✅        |
-|   test   |       —       |       ✅       |        —        |
-| provided |       ✅       |       ✅       |        —        |
-| runtime  |       —       |       ✅       |        ✅        |
-|  system  |       ✅       |       ✅       |        —        |
+| compile  |      ✅       |      ✅       |       ✅        |
+|   test   |       —       |      ✅       |        —        |
+| provided |      ✅       |      ✅       |        —        |
+| runtime  |       —       |      ✅       |       ✅        |
+|  system  |      ✅       |      ✅       |        —        |
 
 Maven 在编译项目主代码时需要使用一套 classpath，在编译和执行测试时会使用另一套 classpath，最后在实际运行 Maven 项目的时候又会使用一套 classpath。依赖范围就是用来控制依赖与这三种 classpath 的关系，Maven 有以下几种依赖范围：
 
 - compile
 
-    编译依赖范围，如果没有指定则默认使用该依赖范围。使用此依赖范围的 Maven 依赖对编译、测试、运行三种 classpath 都有效，例如 spring-core。
+  编译依赖范围，如果没有指定则默认使用该依赖范围。使用此依赖范围的 Maven 依赖对编译、测试、运行三种 classpath 都有效，例如 spring-core。
 
 - test
 
-    测试依赖范围，使用此依赖范围的 Maven 依赖只对测试 classpath 有效，在编译主代码或者运行项目时无法使用此类依赖，例如 JUnit。
+  测试依赖范围，使用此依赖范围的 Maven 依赖只对测试 classpath 有效，在编译主代码或者运行项目时无法使用此类依赖，例如 JUnit。
 
 - provided
 
-    已提供依赖范围，此类依赖对于编译和测试 classpath 有效，在运行时无效，例如 servlet-api。
+  已提供依赖范围，此类依赖对于编译和测试 classpath 有效，在运行时无效，例如 servlet-api。
 
 - runtime
 
-    运行时依赖范围，此类依赖对于测试和运行 classpath 有效，但在编译主代码时无效，例如 JDBC 驱动实现，在项目主代码编译时只需要 JDK 提供的 JDBC 接口，只有在测试或者运行时才需要实现接口具体的 JDBC 驱动。
+  运行时依赖范围，此类依赖对于测试和运行 classpath 有效，但在编译主代码时无效，例如 JDBC 驱动实现，在项目主代码编译时只需要 JDK 提供的 JDBC 接口，只有在测试或者运行时才需要实现接口具体的 JDBC 驱动。
 
 - system
 
   系统依赖范围，该类依赖与 provided 依赖范围一致，使用 system 依赖时必须通过 systemPath 元素现时指定依赖文件的路径，由于此类依赖不是通过 Maven 仓库解析，可能造成构建的不可移植，systemPath 元素可以引用环境变量，例如：
-  
+
   ```xml
   <dependency>
     <groupId>javax.sql</groupId>
@@ -190,11 +190,11 @@ Maven 在编译项目主代码时需要使用一套 classpath，在编译和执�
     <systemPath>${java.home}/lib/rt.jar</systemPath>
   </dependency>
   ```
-  
+
 - import
 
   这个范围只支持在 `<dependencyManagement>` 中 `<type>` 为 `pom` 的依赖中使用，并且它们会被指定的 POM 文件中的 `<dependencyManagement>` 部分的有效依赖列表所替代。
-  
+
   ```xml{7-8}
   <dependencyManagement>
       <dependencies>
@@ -475,15 +475,15 @@ mvn clean deploy
 
 # 插件
 
-Maven 的核心是一个插件执行框架，所有工作都由插件完成。插件往往能够完成多个任务，许多功能聚集在一个插件里，每个功能就是一个**插件目标**（*plugin goal*）。例如`mvn archetype:generate`、`mvn checkstyle:check`。有两种类型的插件：
+Maven 的核心是一个插件执行框架，所有工作都由插件完成。插件往往能够完成多个任务，许多功能聚集在一个插件里，每个功能就是一个**插件目标**（_plugin goal_）。例如`mvn archetype:generate`、`mvn checkstyle:check`。有两种类型的插件：
 
-- 构建插件（*Build Plugins*）
+- 构建插件（_Build Plugins_）
 
-    构建插件将在构建过程中执行，并且应该在 POM 中的 `<build>` 元素中配置它们。
+  构建插件将在构建过程中执行，并且应该在 POM 中的 `<build>` 元素中配置它们。
 
-- 报告插件（*Reporting Plugins*）
+- 报告插件（_Reporting Plugins_）
 
-    报告插件将在站点生成过程中执行，它们应该在 POM 的 `<reporting>` 元素中配置。由于报告插件的结果是生成的站点的一部分，因此报告插件应该同时进行国际化和本地化。
+  报告插件将在站点生成过程中执行，它们应该在 POM 的 `<reporting>` 元素中配置。由于报告插件的结果是生成的站点的一部分，因此报告插件应该同时进行国际化和本地化。
 
 > [!TIP]
 >
@@ -567,26 +567,26 @@ javac 可以使用 `--source` 和 `--target`，分别表示**提供与指定发�
 
 - 使用 `<properties>` 来指定
 
-    ```xml
-    <properties>
-    	<maven.compiler.source>1.8</maven.compiler.source>
-    	<maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    ```
+  ```xml
+  <properties>
+  	<maven.compiler.source>1.8</maven.compiler.source>
+  	<maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  ```
 
 - 直接配置插件
 
-    ```xml
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
-        <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-        </configuration>
-    </plugin>
-    ```
+  ```xml
+  <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.13.0</version>
+      <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+      </configuration>
+  </plugin>
+  ```
 
 设置 `target` 并不能保证代码实际上能在具有指定版本的 JRE 上运行，如果无意中使用了只存在于后来的 JRE 中的 API，这将使代码在运行时因链接错误而失败，要避免此问题，可以配置编译器以匹配目标 JRE，或者更好地使用自 JDK 9 以来支持的 `--release` 选项。同样，设置 `source` 并不能保证代码实际上在具有指定版本的 JDK 上编译。
 
@@ -639,7 +639,7 @@ Maven 工具链为项目提供了一种指定用于构建项目的 JDK（或其�
 
 2. 配置 `toolchains.xml` 文件。
 
-   `toolchains.xml` 文件是用于设置工具链安装路径的配置文件，此文件应放在 `${user.home}/.m2` 目录中，当 `maven-toolchains-plugin` 执行时，它会查找  `toolchains.xml` 文件，读取该文件并查找与插件中配置的工具链需求相匹配的工具链。
+   `toolchains.xml` 文件是用于设置工具链安装路径的配置文件，此文件应放在 `${user.home}/.m2` 目录中，当 `maven-toolchains-plugin` 执行时，它会查找 `toolchains.xml` 文件，读取该文件并查找与插件中配置的工具链需求相匹配的工具链。
 
 ::: code-group
 
@@ -709,7 +709,7 @@ Maven 工具链为项目提供了一种指定用于构建项目的 JDK（或其�
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>	
+    <modelVersion>4.0.0</modelVersion>
     <groupId>com.project</groupId>
     <artifactId>project-aggregaotr</artifactId>
     <version>1.0</version>
@@ -744,37 +744,37 @@ Maven 工具链为项目提供了一种指定用于构建项目的 JDK（或其�
 
 1. 依赖管理
 
-    依赖也是可以继承的，Maven 提供了 `<dependencyManagement>` 元素既能让子模块继承到父模块的依赖配置，也能保证子模块依赖使用的灵活性。在 `<dependencyManagement>` 元素下的依赖声明不会引入实际的依赖，但能约束 `<dependencies>` 下的依赖使用。父模块中声明依赖后，子模块在使用依赖时无需声明版本，只需简单配置 gounpId 和 artifactId 就能获得对应的依赖。
+   依赖也是可以继承的，Maven 提供了 `<dependencyManagement>` 元素既能让子模块继承到父模块的依赖配置，也能保证子模块依赖使用的灵活性。在 `<dependencyManagement>` 元素下的依赖声明不会引入实际的依赖，但能约束 `<dependencies>` 下的依赖使用。父模块中声明依赖后，子模块在使用依赖时无需声明版本，只需简单配置 gounpId 和 artifactId 就能获得对应的依赖。
 
-    ```xml
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                ...
-            </dependency>
-            ...
-        </dependencies>
-    </dependencyManagement>
-    ```
+   ```xml
+   <dependencyManagement>
+       <dependencies>
+           <dependency>
+               ...
+           </dependency>
+           ...
+       </dependencies>
+   </dependencyManagement>
+   ```
 
 2. 插件管理
 
-    类似的，Maven 提供了 `<pluginManagement>` 元素帮助管理依赖，在该元素中配置的依赖不会造成实际的插件调用行为，当 POM 中配置了真正的 `<plugin>` 元素，并且其 groupId 和 artifactId 与 `<pluginManagement>` 中配置的插件匹配时，`<pluginManagement>` 的配置才会影响实际的插件行为。在父 POM 配置 `<pluginManagement>`：
+   类似的，Maven 提供了 `<pluginManagement>` 元素帮助管理依赖，在该元素中配置的依赖不会造成实际的插件调用行为，当 POM 中配置了真正的 `<plugin>` 元素，并且其 groupId 和 artifactId 与 `<pluginManagement>` 中配置的插件匹配时，`<pluginManagement>` 的配置才会影响实际的插件行为。在父 POM 配置 `<pluginManagement>`：
 
-    ```xml
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>...</groupId>
-                    <artifactId>...</artifactId>
-                    <version>...</version>
-                </plugin>
-                ...
-            </plugins>
-        </pluginManagement>
-    </build>
-    ```
+   ```xml
+   <build>
+       <pluginManagement>
+           <plugins>
+               <plugin>
+                   <groupId>...</groupId>
+                   <artifactId>...</artifactId>
+                   <version>...</version>
+               </plugin>
+               ...
+           </plugins>
+       </pluginManagement>
+   </build>
+   ```
 
 # Maven 属性
 
@@ -805,7 +805,7 @@ Maven 工具链为项目提供了一种指定用于构建项目的 JDK（或其�
   <properties>
   	<springframework.version>2.5.6</springframework.version>
   </properties>
-  
+
   <dependencies>
   	<dependency>
       	<grounpId>org.springframework</grounpId>
