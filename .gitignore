@@ -1,4 +1,17 @@
+# IDEA
+.idea/
+
+# VS Code
+.vscode/
+
+# MAC OS
+.DS_Store
+
 node_modules/
 cache/
 dist/
-.DS_Store
+__tests__/
+*.local
+*.log
+TODOs.md
+.eslintcache
