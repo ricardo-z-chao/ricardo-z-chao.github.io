@@ -2,15 +2,16 @@ import type { DefaultTheme } from "vitepress";
 import { categoryInfo } from "./category";
 import matter from "gray-matter";
 import { readdirSync, readFileSync } from "node:fs";
+import type { Category } from "./category";
 
-function sidebarConfig(): DefaultTheme.SidebarMulti {
-  let config: DefaultTheme.SidebarMulti = {};
-  let categoryMap: Map<Category, DefaultTheme.SidebarItem[]> = new Map();
+const config = (function (): DefaultTheme.SidebarMulti {
+  const config: DefaultTheme.SidebarMulti = {};
+  const categoryMap: Map<Category, DefaultTheme.SidebarItem[]> = new Map();
   for (const category in categoryInfo) {
     const enumCategory = category as Category;
-    let files = readdirSync(`src/${enumCategory}`);
+    const files = readdirSync(`src/${enumCategory}`);
     for (const file of files) {
-      let content = readFileSync(`src/${enumCategory}/${file}`);
+      const content = readFileSync(`src/${enumCategory}/${file}`);
       const { data } = matter(content);
       if (categoryMap.has(enumCategory)) {
         categoryMap.get(enumCategory)?.push({
@@ -31,8 +32,6 @@ function sidebarConfig(): DefaultTheme.SidebarMulti {
     config[`/${category}/`] = items;
   }
   return config;
-}
-
-let config = sidebarConfig();
+})();
 
 export default config;

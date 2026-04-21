@@ -1,6 +1,8 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@vue/tsconfig",
-  "include": ["types/*.ts", ".vitepress/**/*.ts", "components/*.vue"],
+  "files": ["eslint.config.ts", "stylelint.config.ts"],
+  "include": [".vitepress/**/*.ts", "components/*.vue"],
   "compilerOptions": {
     "types": ["node", "markdown-it"],
     "baseUrl": "./",
@@ -11,6 +13,7 @@
     "allowJs": true,
     /* Linting */
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,

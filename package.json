@@ -17,8 +17,26 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vue-tsc && vitepress build",
     "docs:preview": "vitepress preview",
-    "typecheck": "vue-tsc",
-    "format": "prettier --write --cache ."
+    "format": "prettier --write --cache .",
+    "lint:ts": "eslint --cache .",
+    "lint:css": "stylelint '**/*.{css,scss,sass,vue,html}' --config stylelint.config.ts --fix",
+    "typecheck": "vue-tsc -p tsconfig.json && pnpm -r --parallel --if-present run typecheck",
+    "prepare": "node .husky/install.js"
+  },
+  "lint-staged": {
+    "*.json": [
+      "prettier --write --cache"
+    ],
+    "*.{ts,js,vue}": [
+      "prettier --write --cache",
+      "eslint --cache"
+    ],
+    "*.{css,html}": [
+      "prettier --write --cache"
+    ],
+    "*.{css,html,vue}": [
+      "stylelint --config stylelint.config.ts --fix"
+    ]
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -34,6 +52,19 @@
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "vitepress": "^1.6.3",
-    "vue-tsc": "^3.2.4"
+    "vue-tsc": "^3.2.4",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.8.0",
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.6.1",
+    "lint-staged": "^16.4.0",
+    "postcss-html": "^1.8.1",
+    "stylelint": "^17.4.0",
+    "stylelint-config-html": "^1.1.0",
+    "stylelint-config-standard": "^40.0.0",
+    "typescript-eslint": "^8.57.0"
   }
 }

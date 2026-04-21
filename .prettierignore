@@ -1,5 +1,4 @@
-**/dist/
-**/*.md
+dist/
 pnpm-lock.yaml
+LICENSE.md
 **/.vitepress/cache/
-.gitignore

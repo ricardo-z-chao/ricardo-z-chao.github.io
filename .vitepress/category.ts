@@ -1,3 +1,10 @@
+export type Category = "notes" | "articles" | "spring";
+
+export type CategoryDetail = {
+  name: string;
+  route: string;
+};
+
 export const categoryInfo: Record<Category, CategoryDetail> = {
   notes: {
     name: "笔记",
@@ -10,5 +17,5 @@ export const categoryInfo: Record<Category, CategoryDetail> = {
   spring: {
     name: "Spring",
     route: "/spring",
-  }
+  },
 };
