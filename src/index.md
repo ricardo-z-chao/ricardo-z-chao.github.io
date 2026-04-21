@@ -2,8 +2,7 @@
 layout: home
 
 hero:
-  name: 你好，我是Ricardo.Z.Chao
-  text: 这是一个自己的学习笔记网站
+  name: 你好，我是 Ricardo
   tagline: 建设中...
 ---
 
