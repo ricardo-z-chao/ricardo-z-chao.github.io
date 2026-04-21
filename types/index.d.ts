@@ -1,4 +1,4 @@
-type Category = "notes" | "articles";
+type Category = "notes" | "articles" | "spring";
 
 type CategoryDetail = {
   name: string;

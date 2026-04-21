@@ -7,4 +7,8 @@ export const categoryInfo: Record<Category, CategoryDetail> = {
     name: "文章",
     route: "/articles",
   },
+  spring: {
+    name: "Spring",
+    route: "/spring",
+  }
 };
