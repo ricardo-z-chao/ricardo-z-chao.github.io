@@ -1,3 +1,10 @@
-# 个人博客
+<p align="center">
+  <a href="https://pinia.vuejs.org" target="_blank" rel="noopener noreferrer">
+    <img width="180" src="src/public/favicon.ico">
+  </a>
+</p>
+<br/>
 
-记录了平时学习笔记、以及一写文档。
+# ricardo-z-chao.github.io
+
+使用 Vitepress 搭建的个人博客。
