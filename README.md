@@ -1,7 +1,5 @@
 <p align="center">
-  <a href="https://pinia.vuejs.org" target="_blank" rel="noopener noreferrer">
-    <img width="180" src="src/public/favicon.ico">
-  </a>
+  <img width="180" src="src/public/favicon.ico">
 </p>
 <br/>
 
