@@ -7,4 +7,19 @@ export default {
     "stylelint-config-html/html",
   ],
   ignoreFiles: ["**/dist/**/*"],
+  rules: {
+    "at-rule-no-unknown": [
+      true,
+      {
+        ignoreAtRules: [
+          "custom-variant",
+          "theme",
+          "apply",
+          "layer",
+          "responsive",
+          "variants",
+        ],
+      },
+    ],
+  },
 } satisfies Config;
