@@ -1,6 +1,5 @@
 import type { DefaultTheme } from "vitepress";
-import { categoryInfo } from "./category";
-import type { CategoryDetail } from "./category";
+import { categoryInfo, type CategoryDetail } from "./const";
 
 const config = (function (): DefaultTheme.NavItemWithLink[] {
   const config: DefaultTheme.NavItemWithLink[] = [];
