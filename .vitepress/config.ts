@@ -2,7 +2,6 @@ import { defineConfig } from "vitepress";
 import mermaidPlugin from "../plugins/markdown-it-mermaid";
 import markdownItMathjax3 from "markdown-it-mathjax3";
 import navConfig from "./nav-config";
-import sidebarConfig from "./sidebar-config";
 import { githubURL } from "./const";
 import path from "node:path";
 
@@ -34,7 +33,6 @@ export default defineConfig({
   },
   themeConfig: {
     nav: navConfig,
-    sidebar: sidebarConfig,
     search: {
       provider: "local",
     },
