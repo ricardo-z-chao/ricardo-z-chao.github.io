@@ -8,9 +8,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { data as catalog } from "@/catalog.data";
+import { data as catalog } from "@vitepress/catalog.data";
 import type { ContentData } from "vitepress";
-import type { Category } from "@/category";
+import type { Category } from "@vitepress/category";
 
 const props = defineProps<{
   category: Category;

@@ -17,8 +17,10 @@ export default defineConfig({
     },
     resolve: {
       alias: {
-        "@": path.resolve(__dirname),
+        "@": path.resolve(__dirname, "../"),
         "@components": path.resolve(__dirname, "../components"),
+        "@vitepress": path.resolve(__dirname),
+        "@lib": path.resolve(__dirname, "../lib"),
       },
     },
   },
