@@ -1,26 +1,25 @@
 <template>
-  <ul>
-    <li v-for="content of contents" :key="content.url">
-      <a :href="content.url">{{ content.frontmatter.title }}</a>
-    </li>
-  </ul>
+  <!-- 笔记 -->
+  <NoteCatalog v-if="props.category === Category.Notes" :rawNoteData="rawNoteData" />
+  <!-- 最新文章 -->
+  <ArticleCatalog v-else-if="props.category === Category.Articles" :rawArticleData="rawArticleData" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { data as catalog } from "@vitepress/catalog.data";
+import { ref } from "vue";
+import { data as rawContents } from "@vitepress/catalog.data";
 import type { ContentData } from "vitepress";
-import type { Category } from "@vitepress/category";
+import { Category } from "@vitepress/const";
+import NoteCatalog from "./NoteCatalog.vue";
+import ArticleCatalog from "./ArticleCatalog.vue";
 
 const props = defineProps<{
   category: Category;
 }>();
 
-let contents = ref([] as ContentData[]);
+let rawNoteData = ref<ContentData[]>([]);
+let rawArticleData = ref<ContentData[]>([]);
 
-onMounted(() => {
-  contents.value = catalog.filter((e) =>
-    e.url.startsWith(`/${props.category}`),
-  );
-});
+rawNoteData.value = rawContents.filter(e => e.url.startsWith(`/${Category.Notes}`));
+rawArticleData.value = rawContents.filter(e => e.url.startsWith(`/${Category.Articles}`));
 </script>
