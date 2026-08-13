@@ -1,5 +1,6 @@
 ---
 title: NodeJS
+type: JavaScript
 ---
 
 # CommonJS 模块

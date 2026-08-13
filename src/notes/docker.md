@@ -8,51 +8,62 @@ title: Docker
 
 ```mermaid
 block-beta
-  columns 6
-  block:vm_1:2
+  columns 3
+
+  block:vm_1:1
     columns 1
-    vm_1_1["APP A"]
-    vm_1_2["Guest Operating System"]
+    APP_A["APP A"]
+    SYS_1["Guest Operating System"]
   end
-  block:vm_2:2
+
+  block:vm_2:1
     columns 1
-    vm_2_1["APP A"]
-    vm_2_2["Guest Operating System"]
+    APP_B["APP B"]
+    SYS_2["Guest Operating System"]
   end
-  block:vm_3:2
+
+  block:vm_3:1
     columns 1
-    vm_3_1["APP A"]
-    vm_3_2["Guest Operating System"]
+    APP_C["APP C"]
+    SYS_3["Guest Operating System"]
   end
-  a["Hypervisor"]:6
-  b["Infrastructure"]:6
+
+  block:machine:3
+    columns 1
+    Hypervisor["Hypervisor"]
+    I["Infrastructure"]
+  end
 
   classDef APP fill:#4591cd,color:#FFF
-  class vm_1_1,vm_2_1,vm_3_1,a APP
+  class APP_A,APP_B,APP_C,Hypervisor APP
   classDef System fill:#d3eafa,color:#000
-  class vm_1_2,vm_2_2,vm_3_2 System
-  style b fill:#64c3ab,color:#FFF
+  class SYS_1,SYS_2,SYS_3 System
+  style I fill:#64c3ab,color:#FFF
 ```
 
 **容器**是软件的标准单元，是应用程序层的一个抽象，它将代码和依赖关系打包在一起，以便应用程序在不同的计算环境之间快速可靠地运行。多个容器可以运行在同一台机器上，并与其他容器共享操作系统内核，每个容器都作为用户空间中的独立进程运行。容器比 VM 占用更少的空间，可以处理更多的应用程序。
 
 ```mermaid
 block-beta
-  columns 6
-  block:group1:6
-    %% columns auto (default)
-    l["APP A"]
-    m["APP B"]
-    n["APP C"]
+  columns 3
+
+  block:DockerImage:3
+    APP_A["APP A"]
+    APP_B["APP B"]
+    APP_C["APP C"]
   end
-  a["Docker"]:6
-  b["Host Operating System"]:6
-  c["Infrastructure"]:6
+
+  block:machine:3
+    columns 1
+    Docker["Docker"]
+    SYS["Host Operating System"]
+    Infrastructure["Infrastructure"]
+  end
 
   classDef APP fill:#4591cd,color:#FFF
-  class l,m,n,a APP
-  style b fill:#d3eafa,color:#000
-  style c fill:#64c3ab,color:#FFF
+  class APP_A,APP_B,APP_C,Docker APP
+  style SYS fill:#d3eafa,color:#000
+  style Infrastructure fill:#64c3ab,color:#FFF
 ```
 
 Docker 是一个把开发的应用程序自动部署到容器的开源引擎，Docker 在虚拟化的容器执行环境中增加了一个应用程序部署引擎，用来提供一个轻量、快速的环境用来运行开发者的程序。
@@ -76,7 +87,6 @@ Docker 核心组件：
 - Docker 镜像
 
   用户基于镜像（image）来运行自己的容器。
-
 
 - Docker 容器
 
@@ -220,7 +230,7 @@ docker run [OPTIONS] <IMAGE> [COMMAND] [ARG...]
 >
 > 当容器中指定的应用程序终结时，容器也会自动终止。例如启动一个终端 `docker run -it ubuntu /bin/bash`，当退出这个终端时这个容器也就处于终止状态。
 
-有时候需要进入容器进行操作，这时可以使用  `docker attach` 或者 `docker exec` 命令。使用 `attach` 时，当多个窗口同时 `attach` 到一个容器的时候，所有窗口都会同步显示，当某个窗口因命令阻塞时，其他窗口就无法执行操作了。更常见的是使用 `docker exec`。
+有时候需要进入容器进行操作，这时可以使用 `docker attach` 或者 `docker exec` 命令。使用 `attach` 时，当多个窗口同时 `attach` 到一个容器的时候，所有窗口都会同步显示，当某个窗口因命令阻塞时，其他窗口就无法执行操作了。更常见的是使用 `docker exec`。
 
 ```shell
 docker attach <CONTAINER>
@@ -245,7 +255,7 @@ docker import [OPTIONS] file|URL|- [REPOSITORY[:TAG]]
 
 > [!CAUTION]
 >
-> `docker commit` 用于将一个容器的状态保存为一个新的镜像，当你在一个容器内进行了某些修改（例如安装软件、更改配置等），可以通过这个命令把这些修改保存到一个新的镜像中。当你需要基于现有容器快速创建包含特定修改的新镜像时这种方式非常有用。`docker export` 仅导出容器当前文件系统的快照，不保存容器的历史记录或元数据。
+> `docker commit` 用于将一个容器的状态保存为一个新的镜像，当你在一个容器内进行了某些修改（例如安装软件、更改配置等），可以通过这个命令把这些修改保存到一个新的镜像中，当你需要基于现有容器快速创建包含特定修改的新镜像时这种方式非常有用。而 `docker export` 仅导出容器当前文件系统的快照，不保存容器的历史记录或元数据。
 
 # 数据管理
 
@@ -253,7 +263,7 @@ docker import [OPTIONS] file|URL|- [REPOSITORY[:TAG]]
 
 ## 数据卷
 
-数据卷（*Data Volumes*）是一个可供容器使用的特殊目录，它绕过系统文件，可以提供很多特性：
+数据卷（_Data Volumes_）是一个可供容器使用的特殊目录，它绕过系统文件，可以提供很多特性：
 
 - 数据卷可以在容器之间共享和重用。
 - 对数据卷的修改会立马生效。
@@ -265,7 +275,7 @@ docker import [OPTIONS] file|URL|- [REPOSITORY[:TAG]]
 ```shell
 # 查看所有数据卷
 docker volume ls
-# 创建数据卷
+# 创建一个命名数据卷
 docker volume create <volume>
 # 删除所有未使用的的本地数据卷
 docker volume prune
@@ -278,7 +288,10 @@ docker volume rm <volume>
 在使用 `docker run` 命令时可以使用 `-v` 选项来创建一个数据卷，指定数据卷要挂载到容器的哪个目录下：
 
 ```shell
+# 挂载一个匿名数据卷
 docker run -d -v <mount_dir> <container> <exec>
+# 挂载一个命名数据卷
+docker run -d -v <volume_name>:<mount_dir> <container> <exec>
 ```
 
 也可以指定挂载一个主机目录或者文件到容器中作为数据卷：
@@ -292,12 +305,26 @@ docker run -v ~/.bash_history:/.bash_history <container> <exec>
 >
 > Docker 挂载数据卷的默认权限是读写 rw，可以通过 ro 指定为只读，例如 `-v /dir:/dir:ro`，这样容器内挂载的数据卷的数据就无法修改了。
 
+查看容器的数据卷信息，需要运行 `docker inspect <container>`，在输出中查找 Mounts 部分，例如：
+
+```json
+"Mounts": [
+    {
+        "Type": "volume",
+        "Name": "2a1b3c4d5e6f7890abcdef1234567890",
+        "Source": "/var/lib/docker/volumes/2a1b3c4d5e6f7890abcdef1234567890/_data",
+        "Destination": "/app/data",
+        "Driver": "local"
+    }
+]
+```
+
 ## 数据卷容器
 
 如果需要在容器之间共享一些持续更新的数据，可以使用**数据卷容器**。数据卷容器就是一个普通的容器，专门用它提供数据卷供其他容器挂载使用。
 
 ```shell
-# 创建一个数据卷容器dbdata，并在其中创建一个数据卷
+# 创建一个数据卷容器dbdata，并在其中创建一个数据卷，挂载到/dbdata目录
 docker run -it -v /dbdata --name dbdata ubuntu
 # 在其他容器中来挂载dbdata容器中的数据卷
 docker run -it --volumes-from dbdata --name db1 ubuntu
@@ -321,23 +348,23 @@ docker port <container>
 
 1. 映射所有接口地址
 
-    使用 `-p <host_port>:<container_port>` 格式将本地端口映射到容器的端口。此时会绑定本地所有接口上的所有地址。
+   使用 `-p <host_port>:<container_port>` 格式将本地端口映射到容器的端口。此时会绑定本地所有接口上的所有地址。
 
 2. 映射到指定地址的指定端口
 
-    使用 `-p <ip>:<host_port>:<container_port>` 格式指定映射使用一个特定地址。
+   使用 `-p <ip>:<host_port>:<container_port>` 格式指定映射使用一个特定地址。
 
 3. 映射指定地址的任意端口
 
-    使用 `-p <ip>::<container_port>` 绑定指定地址的任意端口到容器的端口，指定的地址会自动分配一个端口。
+   使用 `-p <ip>::<container_port>` 绑定指定地址的任意端口到容器的端口，指定的地址会自动分配一个端口。
 
 > [!NOTE]
 >
-> 可以使用 udp 标记来指定 udp 端口。例如`5000:5000/udp`。
+> 可以使用 udp 标记来指定 udp 端口。例如 `5000:5000/udp`。
 
 # Docker Build
 
-通过 `docker build` 命令可以构建自己的 Docker 镜像，这个命令会根据 [Dockerfile](https://docs.docker.com/reference/dockerfile/) 和构建上下文来构建镜像。构建上下文是可以访问的文件集合，可以是本地目录，也可以是远程的 Git 仓库的 URL。
+通过 `docker build` 命令可以构建自己的 Docker 镜像，这个命令会根据 Dockerfile 和构建上下文来构建镜像。构建上下文是可以访问的文件集合，可以是本地目录，也可以是远程的 Git 仓库的 URL。
 
 ```shell
 # -t选项表示指定镜像的名称和标签
@@ -350,28 +377,55 @@ docker build -t <iamges>:<tag> <path>
 
 ## Dockerfile
 
-| 指令                                                         | 含义                                                         |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [`FROM <image> `](https://docs.docker.com/reference/dockerfile/#from) | 定义镜像的基础。                                             |
-| [`RUN <command>`](https://docs.docker.com/reference/dockerfile/#run) | 这个指令会执行命令并且在镜像的顶层添加一个新的 layer。       |
-| [`ENTRYPOINT <command>`](https://docs.docker.com/reference/dockerfile/#entrypoint) |                                                              |
-| [`WORKDIR <directory>`](https://docs.docker.com/reference/dockerfile/#workdir) | 为 `RUN`、`CMD`、`ENTRYPOINT`、`COPY`、`ADD` 指令设置工作目录。 |
-| [`COPY <src> <dest>`](https://docs.docker.com/reference/dockerfile/#copy) | 从 `<src>` 路径复制文件或者目录到容器的文件系统下的 `<dest>` 目录。 |
-| [`CMD <command>`](https://docs.docker.com/reference/dockerfile/#cmd) | 这个指定用于定义启动容器时默认的命令，每个Dockerfile 只能有一个 `CMD`。 |
-|                                                              |                                                              |
+| 指令                                                                               | 含义                                                                       |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`FROM <image> `](https://docs.docker.com/reference/dockerfile/#from)              | 定义镜像的基础。对于多阶段构建，每个 `FROM` 指令都会开始一个新的构建阶段。 |
+| [`RUN <command>`](https://docs.docker.com/reference/dockerfile/#run)               | 这个指令会执行命令并且在镜像的顶层添加一个新的 layer。                     |
+| [`ENTRYPOINT <command>`](https://docs.docker.com/reference/dockerfile/#entrypoint) | 这个指令允许为容器配置一个可执行文件并运行。                               |
+| [`WORKDIR <directory>`](https://docs.docker.com/reference/dockerfile/#workdir)     | 为 `RUN`、`CMD`、`ENTRYPOINT`、`COPY`、`ADD` 指令设置工作目录。            |
+| [`COPY <src> <dest>`](https://docs.docker.com/reference/dockerfile/#copy)          | 从 `<src>` 路径复制文件或者目录到容器的文件系统下的 `<dest>` 目录。        |
+| [`CMD <command>`](https://docs.docker.com/reference/dockerfile/#cmd)               | 这个指定用于定义启动容器时默认的命令，每个Dockerfile 只能有一个 `CMD`。    |
 
 > [!NOTE]
 >
-> 详细命令含义请看：https://docs.docker.com/reference/dockerfile/#overview
+> 更多命令含义请看：https://docs.docker.com/reference/dockerfile/#overview
 
 `RUN`、`CMD` 和 `ENTRYPOINT` 指令有两种可能的形式：
 
 - `INSTRUCTION ["executable","param1","param2"]` (exec form)
 - `INSTRUCTION command param1 param2` (shell form)
 
-exec form 会被解析成 JSON 数组，这意味着你必须在词语中使用双引号，而不是单引号。使用 exec form 不会自动调用命令 shell，这意味着正常的 shell 处理，例如变量替换不会发生。例如 `RUN [ "echo", "$HOME"]` 中 `$HOME` 不能被替换。而 shell form 将始终使用 命令 shell。
+exec form 会被解析成 JSON 数组，这意味着你必须在词语中使用双引号，而不是单引号。使用 exec form 不会自动调用命令 shell，这意味着正常的 shell 处理，例如变量替换不会发生。例如 `RUN [ "echo", "$HOME"]` 中 `$HOME` 不能被替换。而 shell form 将始终使用命令 shell。
 
+`CMD` 可以和 `ENTRYPOINT` 结合使用，作为 `ENTRYPOINT` 的默认参数，例如 `CMD ["param1","param2"]`。
 
+```dockerfile
+# 构建镜像后运行容器，默认会执行'echo hello world'
+FROM ubuntu
+ENTRYPOINT ["echo", "hello"]
+CMD ["world"]
+```
+
+一个 Dockerfile 例子如下，用于运行一个基于 Node.js 开发的应用程序：
+
+```dockerfile
+# syntax=docker/dockerfile:1
+
+# 这里ARG指令用于定义参数
+ARG NODE_VERSION="20"
+ARG ALPINE_VERSION="3.21"
+
+# 配置Node.js环境，通常选用alpine这种轻量的Linux发行版本，AS指令用于定义这个构建阶段的名称，WORKDIR指令定义当前的工作目录上下文，之后的相对目录会基于这个目录
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS base
+WORKDIR /src
+
+# 选用之前的构建作为新的构建阶段
+FROM base AS production
+COPY package*.json ./
+RUN npm ci
+COPY --from=build /src/dist/ .
+CMD ["node", "app.js"]
+```
 
 ## 多平台镜像
 
@@ -387,3 +441,104 @@ docker buildx build --platform <arch> <path>
 
 # Docker Compose
 
+Docker Compose 可以用来定义和运行多容器的应用。可以通过 YAML 配置文件管理服务、网络和数据卷。
+
+```shell
+# 启用所有定义在配置文件中的服务
+docker compose up
+# 停止服务
+docker compose stop
+# 停止和删除正在运行的服务
+docker compose down
+# 查看日志
+docker compose logs
+# 列出所有服务的状态
+docker compose ps
+```
+
+## Compose 配置文件
+
+Compose 配置文件的默认路径是工作目录下的 `compose.yaml` 或者 `compose.yml` 文件。一个简单的例子：
+
+```
+docker compose -f compose.yaml -f compose.admin.yaml run backup_db
+```
+
+```yaml
+nam: myapp
+services:
+  web:
+    build: .
+    ports:
+      - "8000:5000" # 这里定义了主机端口8000映射Dockerfile中暴露的端口5000
+  redis:
+    image: "redis:alpine"
+```
+
+这里定义了两个服务分别是 web 和 redis，web 服务会使用 Dockerfile 文件来构建镜像，然后指定端口号来启动容器，同时使用了 watch 来监听文件的变化，path 定义了源代码的位置，target 表示输出目录在容器中的位置。
+
+> [!TIP]
+>
+> 对于不同应用的构建文件参考[用例](https://docs.docker.com/reference/samples/)。Compose 配置文件语法参考[文档](https://docs.docker.com/reference/compose-file/)。
+
+## Profile
+
+通过指定 `profile` 属性可以让 service 在指定的 Profile 中启用：
+
+```yaml
+services:
+  frontend:
+    image: frontend
+    profiles: [frontend]
+
+  phpmyadmin:
+    image: phpmyadmin
+    depends_on: [db]
+    profiles: [debug]
+
+  backend:
+    image: backend
+
+  db:
+    image: mysql
+```
+
+若要指定 Profile，需要在命令行选项中指定 `--profile`：
+
+```shell
+# 启动phpmyadmin、backend、db
+docker compose --profile debug up
+# 启动fontend、phpmyadmin、backend、db
+docker compose --profile frontend --profile debug up
+# 启动全部
+docker compose --profile "*" up
+```
+
+## 控制启动顺序
+
+可以使用 `depends_on` 属性来控制服务启动和关闭的顺序，Compose 总是会根据依赖顺序来启动容器
+
+## 监听
+
+如果启用这个功能，当编辑和保存代码时会自动更新 Compose 服务。
+
+```yaml
+services:
+  web:
+    build: .
+    command: npm start
+    develop:
+      watch:
+        - action: sync
+          path: ./web
+          target: /src/web
+          initial_sync: true
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+```
+
+## 管理密钥
+
+## 网络

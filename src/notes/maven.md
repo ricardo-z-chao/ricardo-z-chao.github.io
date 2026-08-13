@@ -1,5 +1,6 @@
 ---
 title: Maven
+type: Java
 ---
 
 # 安装

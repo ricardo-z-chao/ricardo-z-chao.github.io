@@ -1,5 +1,6 @@
 ---
 title: TypeScript
+type: JavaScript
 ---
 
 # 初始化项目

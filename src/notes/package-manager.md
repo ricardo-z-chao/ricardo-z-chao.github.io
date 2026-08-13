@@ -1,5 +1,6 @@
 ---
 title: 包管理器
+type: JavaScript
 ---
 
 # 安装
