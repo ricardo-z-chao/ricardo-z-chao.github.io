@@ -1,17 +1,14 @@
 import type { DefaultTheme } from "vitepress";
-import { categoryInfo, type CategoryDetail } from "./const";
+import { Category, categoryInfo } from "./const";
 
-const config = (function (): DefaultTheme.NavItemWithLink[] {
-  const config: DefaultTheme.NavItemWithLink[] = [];
-  for (const category in categoryInfo) {
-    const key = category as keyof typeof categoryInfo;
-    const categoryDetail: CategoryDetail = categoryInfo[key];
-    config.push({
-      text: categoryDetail.name,
-      link: categoryDetail.route,
-    });
-  }
-  return config;
-})();
+const config: DefaultTheme.NavItemWithLink[] = [];
+
+for (const key in categoryInfo) {
+  const categoryDetail = categoryInfo[key as Category];
+  config.push({
+    text: categoryDetail.name,
+    link: categoryDetail.route,
+  });
+}
 
 export default config;

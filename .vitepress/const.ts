@@ -13,13 +13,13 @@ export type CategoryDetail = {
 };
 
 export const categoryInfo: Record<Category, CategoryDetail> = {
-  notes: {
+  [Category.Notes]: {
     name: "笔记",
-    route: `/${Category.Notes}`,
+    route: `/${Category.Notes}/`,
   },
-  articles: {
+  [Category.Articles]: {
     name: "最新文章",
-    route: `/${Category.Articles}`,
+    route: `/${Category.Articles}/`,
   },
 };
 
