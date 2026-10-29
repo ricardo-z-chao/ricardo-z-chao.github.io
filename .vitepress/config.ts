@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 import mermaidPlugin from "../plugins/markdown-it-mermaid";
 import markdownItMathjax3 from "markdown-it-mathjax3";
+import markdownItFootnote from "markdown-it-footnote";
 import navConfig from "./nav-config";
 import { githubURL } from "./const";
 import path from "node:path";
@@ -28,7 +29,7 @@ export default defineConfig({
       lazyLoading: true,
     },
     config: (md) => {
-      md.use(mermaidPlugin).use(markdownItMathjax3);
+      md.use(mermaidPlugin).use(markdownItMathjax3).use(markdownItFootnote);
     },
   },
   themeConfig: {
