@@ -27,5 +27,6 @@ export enum NoteType {
   Java = "Java",
   Database = "数据库",
   JavaScript = "JavaScript",
+  BuildTool = "构建工具",
   Other = "其他",
 }
