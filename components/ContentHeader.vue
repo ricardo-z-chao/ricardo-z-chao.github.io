@@ -32,6 +32,7 @@
       >
         <LinkIcon class="h-4 w-4" />
         <a
+          v-if="reference.url"
           :href="reference.url"
           target="_blank"
           rel="noopener noreferrer"
@@ -39,6 +40,7 @@
         >
           {{ reference.text }}
         </a>
+        <text v-else>{{ reference.text }}</text>
       </div>
     </div>
   </div>
