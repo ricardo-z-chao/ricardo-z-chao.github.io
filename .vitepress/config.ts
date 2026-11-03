@@ -45,9 +45,5 @@ export default defineConfig({
     },
     logo: "/favicon.ico",
     socialLinks: [{ icon: "github", link: githubURL }],
-    footer: {
-      message: `Released under the <a href="${githubURL}/introduction/blob/master/LICENSE">MIT License</a>.`,
-      copyright: `Copyright © 2025-present <a href="${githubURL}">Ricardo.Z.Chao</a>`,
-    },
   },
 });
