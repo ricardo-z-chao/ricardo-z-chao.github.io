@@ -150,10 +150,32 @@
 
       <!-- ===== Gradle 列 ===== -->
       <!-- Cache -->
-      <rect x="830" y="150" width="440" height="105" rx="12" class="panel" />
-      <text x="1050" y="213" class="label" font-size="29" text-anchor="middle">
-        Cache
-      </text>
+      <g
+        class="anchor"
+        role="link"
+        tabindex="0"
+        :aria-label="`跳转到 ${anchors.cache} 章节`"
+        @click="go('cache')"
+        @keydown="onKey($event, 'cache')"
+      >
+        <rect
+          x="830"
+          y="150"
+          width="440"
+          height="105"
+          rx="12"
+          class="panel anchor-bg"
+        />
+        <text
+          x="1050"
+          y="213"
+          class="label"
+          font-size="29"
+          text-anchor="middle"
+        >
+          Cache
+        </text>
+      </g>
 
       <!-- Build Flow（圆柱体） -->
       <path d="M860 380 V 628 A 190 52 0 0 0 1240 628 V 380" class="panel" />
@@ -350,7 +372,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-type AnchorKey = "settings" | "build" | "task" | "plugins" | "dependencies";
+type AnchorKey =
+  | "settings"
+  | "build"
+  | "cache"
+  | "task"
+  | "plugins"
+  | "dependencies";
 
 /**
  * 可点击区域 → 目标章节的 `id`。
@@ -360,6 +388,7 @@ type AnchorKey = "settings" | "build" | "task" | "plugins" | "dependencies";
 const DEFAULT_ANCHORS: Record<AnchorKey, string> = {
   settings: "settings-gradle",
   build: "build-gradle",
+  cache: "cache",
   task: "tasks",
   plugins: "plugins",
   dependencies: "dependencies",
