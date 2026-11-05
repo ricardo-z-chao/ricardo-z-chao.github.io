@@ -20,19 +20,19 @@ description: 本博客项目（VitePress + Vue 3 + Tailwind v4 + shadcn-vue）�
 - 路径别名：`@/*` → 仓库根目录（**不是** `src/`），另有 `@components/*`、`@vitepress/*`、`@lib/*`
 - 图标库：`@lucide/vue`（注意不是 `@lucide/vue-next`）
 
-## 新增业务组件（components/*.vue）
+## 新增业务组件（components/\*.vue）
 
 1. 文件名 PascalCase，与组件名一致，平铺放 `components/`，不为单个组件建目录
 2. 一律 `<script setup lang="ts">`；禁止新增不带 `lang="ts"` 的组件（`ContentHeader.vue` 是历史例外，新代码不要照抄）
 3. Props 用类型声明 + `withDefaults`，例如：
 
    ```vue
-   const props = withDefaults(defineProps<{ category: Category; size?: "sm" | "md" }>(), {
-     size: "md",
-   });
+   const props = withDefaults(defineProps<{ category: Category; size?: "sm" |
+   "md" }>(), { size: "md", });
    ```
 
    Emits 用 `defineEmits<{ change: [value: string] }>()`
+
 4. 需要在 markdown 中直接使用的组件，必须在 `.vitepress/theme/index.ts` 的 `enhanceApp` 中注册，如 `app.component("Catalog", Catalog)`
 5. 样式优先用 Tailwind 工具类；class 合并一律 `cn()`，不用模板字符串拼接
 6. import 大致顺序：vue 核心 → 第三方库 → 类型导入 → 别名导入（`@/`、`@components/`）→ 相对导入
@@ -46,6 +46,7 @@ description: 本博客项目（VitePress + Vue 3 + Tailwind v4 + shadcn-vue）�
    ```
 
    `components.json` 已配置：`new-york` 风格、`styles/globals.css`、`baseColor: neutral`、`cssVariables: true`、lucide 图标、`@/components/ui` 输出路径。不要改动这些配置，除非用户明确要求。
+
 2. 生成后按项目既有模式核对 / 调整：
    - 用 reka-ui 的 `Primitive` 组合，根节点带 `data-slot` 属性（如 `data-slot="item"`），并透传 `data-*` 变量
    - 变体用 `cva()` 定义（含 `defaultVariants`），放在 `index.ts` 并导出 `xxxVariants` 与 `VariantProps` 类型

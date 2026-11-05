@@ -1,8 +1,14 @@
 <template>
   <!-- 笔记 -->
-  <NoteCatalog v-if="props.category === Category.Notes" :rawNoteData="rawNoteData" />
+  <NoteCatalog
+    v-if="props.category === Category.Notes"
+    :rawNoteData="rawNoteData"
+  />
   <!-- 最新文章 -->
-  <ArticleCatalog v-else-if="props.category === Category.Articles" :rawArticleData="rawArticleData" />
+  <ArticleCatalog
+    v-else-if="props.category === Category.Articles"
+    :rawArticleData="rawArticleData"
+  />
 </template>
 
 <script setup lang="ts">
@@ -20,6 +26,10 @@ const props = defineProps<{
 let rawNoteData = ref<ContentData[]>([]);
 let rawArticleData = ref<ContentData[]>([]);
 
-rawNoteData.value = rawContents.filter(e => e.url.startsWith(`/${Category.Notes}`));
-rawArticleData.value = rawContents.filter(e => e.url.startsWith(`/${Category.Articles}`));
+rawNoteData.value = rawContents.filter((e) =>
+  e.url.startsWith(`/${Category.Notes}`),
+);
+rawArticleData.value = rawContents.filter((e) =>
+  e.url.startsWith(`/${Category.Articles}`),
+);
 </script>
