@@ -3,14 +3,28 @@ title: 包管理器
 type: JavaScript
 ---
 
-> [!TIP]
->
-> 参考资料：
->
-> - [npm doc](https://docs.npmjs.com)
-> - [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies)
-> - [symlinked node modules structure](https://pnpm.io/zh/symlinked-node-modules-structure)
-> - [how peers are resolved](https://pnpm.io/how-peers-are-resolved)
+<ContentHeader :references="references" />
+
+<script setup>
+const references = [
+  {
+    text: "npm doc",
+    url: "https://docs.npmjs.com",
+  },
+  {
+    text: "peer dependencies",
+    url: "https://nodejs.org/en/blog/npm/peer-dependencies",
+  },
+  {
+    text: "symlinked node modules structure",
+    url: "https://pnpm.io/zh/symlinked-node-modules-structure",
+  },
+  {
+    text: "how peers are resolved",
+    url: "https://pnpm.io/how-peers-are-resolved",
+  },
+];
+</script>
 
 # 安装
 
@@ -90,11 +104,11 @@ npm init <package-spec>
 
 每次对自己的 npm 包进行重大更新时，建议在遵循语义版本规范的 package.json 文件中发布一个新版本的包，其中包含更新的版本号。遵循语义版本规范可以帮助依赖你代码的其他开发人员了解给定版本中的更改程度，并在必要时调整自己的代码。
 
-| Code status                               | Stage         | Rule                                                         | Example version |
-| ----------------------------------------- | ------------- | ------------------------------------------------------------ | --------------- |
-| First release                             | New product   | Start with 1.0.0                                             | 1.0.0           |
-| Backward compatible bug fixes             | Patch release | Increment the third digit                                    | 1.0.1           |
-| Backward compatible new features          | Minor release | Increment the middle digit and reset last digit to zero      | 1.1.0           |
+| Code status                               | Stage         | Rule                                                               | Example version |
+| ----------------------------------------- | ------------- | ------------------------------------------------------------------ | --------------- |
+| First release                             | New product   | Start with 1.0.0                                                   | 1.0.0           |
+| Backward compatible bug fixes             | Patch release | Increment the third digit                                          | 1.0.1           |
+| Backward compatible new features          | Minor release | Increment the middle digit and reset last digit to zero            | 1.1.0           |
 | Changes that break backward compatibility | Major release | Increment the first digit and reset middle and last digits to zero | 2.0.0           |
 
 可以在包的 package.json 文件中指定包可以从依赖项接受哪些更新类型。例如，要指定可接受的版本范围，请使用以下语法：
@@ -135,8 +149,8 @@ npm prefix [-g]
 
 |   模式   | 可通过require使用 | 注册PATH |
 | :------: | ----------------- | -------- |
-| 本地模式 | ✅                 | 🚫        |
-| 全局模式 | 🚫                 | ✅        |
+| 本地模式 | ✅                | 🚫       |
+| 全局模式 | 🚫                | ✅       |
 
 > [!NOTE]
 >
@@ -217,7 +231,7 @@ npm 会将指定的包保存到 package.json 文件中，同时可以通过附�
     }
   }
   ```
-  
+
   ```
   ├── @npm/tea-latte@1.3.5
   └── @npm/tea@2.2.0
@@ -230,7 +244,7 @@ npm 会将指定的包保存到 package.json 文件中，同时可以通过附�
   > <p>npm <font color="red">error</font> this command with --force or --legacy-peer-deps</p>
   >
   > <p>npm <font color="red">error</font> to accept an incorrect (and potentially broken) dependency resolution.</p>
-  
+
   --legacy-peer-deps 对应早期 npm 的行为，对等依赖不会被安装，npm 将会跳过对等依赖的检查，忽略冲突，继续尝试安装插件包。--force 表示覆盖冲突强制安装， npm 会强制安装插件包，并且可能会在依赖树中的不同层级放置这个对等依赖的不同版本，这可能导致项目里同时存在两个版本的相同依赖从而引发难以排查的运行时错误。
 
 ## 发布包
@@ -403,8 +417,8 @@ npm run <script> -ws --if-present
 
 3. 非扁平的 node_modules
 
-   使用 npm 来安装依赖项时，所有依赖都会被提升到 node_modules 的根目录，因此在源代码中可以访问未作为依赖项添加到项目的依赖项（也就是 *Phantom Dependency* 问题），而 pnpm 仅将声明过的依赖使用符号链接添加到 node_modules 的根目录中，从而避免这个问题。
-   
+   使用 npm 来安装依赖项时，所有依赖都会被提升到 node*modules 的根目录，因此在源代码中可以访问未作为依赖项添加到项目的依赖项（也就是 \_Phantom Dependency* 问题），而 pnpm 仅将声明过的依赖使用符号链接添加到 node_modules 的根目录中，从而避免这个问题。
+
    ```
    node_modules
    ├── foo -> ./.pnpm/foo@1.0.0/node_modules/foo
@@ -422,9 +436,9 @@ npm run <script> -ws --if-present
            └── node_modules
                └── qar/  (files linked from <store>)
    ```
-   
+
    > 注：这里例子中，bar 是 foo 的直接依赖，qar 是 bar 和 foo 的直接依赖。
-   
+
    Node.js 在解析模块路径时会忽略符号链接，去找到文件真实的位置，如果在项目中使用了`require('foo')`，实际会找到真正的硬链接文件来加载（即 .pnpm/foo@1.0.0/node_modules/foo）。而当 foo 中的代码使用了`require('bar')`时，Node.js 会遵循向上查找 node_modules 这个规则，因此这也是为什么会有两层 node_modules 以及依赖处于同一层级而不是子目录下的原因。
 
 ## pnpm workspace

@@ -1,7 +1,22 @@
 ---
 title: Maven
-type: Java
+type: 构建工具
 ---
+
+<ContentHeader :references="references">本教程基于 Maven 3 说明。</ContentHeader>
+
+<script setup>
+const references = [
+  {
+    text: "Maven 实战",
+    url: "https://book.douban.com/subject/5345682/"
+  },
+  {
+    text: "Maven doc",
+    url: "https://maven.apache.org/index.html",
+  },
+];
+</script>
 
 # 安装
 
@@ -15,30 +30,6 @@ mvn -v
 ```
 
 通常 maven 安装目录中的 `conf` 目录包含 `setting.xml` 文件，这个文件可以全局定制 Maven 的行为。一般将这个文件复制到 `~/.m2` 目录下，然后修改文件，在用户范围内定制 Maven 的行为。前一个 `settings.xml` 也称为全局设置，后一个 `settings.xml` 称为用户设置，如果这两个文件都存在，它们的内容将被合并，用户设置的 `settings.xml` 将占主导地位。
-
-有时出于安全因素，需要使用通过安全认证的代理访问网络，为 Maven 配置 HTTP 代理让它正常访问外部仓库，修改 `~/.m2/setting.xml` 文件，配置如下：
-
-```xml
-<proxies>
-    <proxy>
-        <id>optional</id>
-        <!-- 表示激活该代理 -->
-        <active>true</active>
-        <protocol>http</protocol>
-        <host>proxy.host.net</host>
-        <port>80</port>
-        <!-- 如果代理服务器需要认证则需要配置用户名和密码 -->
-        <username>proxyuser</username>
-        <password>proxypass</password>
-        <!-- 指定哪些主机名不需要代理，可以使用|来分隔多个主机名，同时也支持通配符* -->
-        <nonProxyHosts>local.net|some.host.com</nonProxyHosts>
-    </proxy>
-</proxies>
-```
-
-> [!TIP]
->
-> 如果 proxies 下声明多个 proxy，默认第一个被激活的 proxy 会生效。
 
 # Maven Wrapper
 
@@ -155,10 +146,10 @@ Maven 坐标（_coordinate_）为各种构件引入了秩序，任何一个构�
 |  scope   | 编译classpath | 测试classpath | 运行时classpath |
 | :------: | :-----------: | :-----------: | :-------------: |
 | compile  |      ✅       |      ✅       |       ✅        |
-|   test   |       —       |      ✅       |        —        |
-| provided |      ✅       |      ✅       |        —        |
-| runtime  |       —       |      ✅       |       ✅        |
-|  system  |      ✅       |      ✅       |        —        |
+|   test   |      🚫       |      ✅       |       🚫        |
+| provided |      ✅       |      ✅       |       🚫        |
+| runtime  |      🚫       |      ✅       |       ✅        |
+|  system  |      ✅       |      ✅       |       🚫        |
 
 Maven 在编译项目主代码时需要使用一套 classpath，在编译和执行测试时会使用另一套 classpath，最后在实际运行 Maven 项目的时候又会使用一套 classpath。依赖范围就是用来控制依赖与这三种 classpath 的关系，Maven 有以下几种依赖范围：
 
@@ -332,7 +323,23 @@ flowchart TD
 
    私服是一种特殊的远程仓库，架设在局域网内的仓库服务，私服代理广域网上的远程仓库，供局域网内的 Maven 用户使用。当 Maven 需要下载构件时，会从私服请求，如果私服不存在构件，则从外部的远程仓库下载，缓存在私服上之后，再为 Maven 的下载请求提供服务。
 
-   ![private-server](../figures/private-server.webp)
+   ```mermaid
+   flowchart LR
+       subgraph LAN ["局域网"]
+           direction TB
+           C1["💻"]
+           PrivateRepo["🗄️ 私服"]
+       end
+
+       CentralRepo["🗄️ 中央仓库"]
+       OtherRepo["🗄️ 其他仓库"]
+
+       C1 -- "上传构件" --> PrivateRepo
+       PrivateRepo -- "下载构件" --> C1
+
+       CentralRepo -- "缓存构件" --> PrivateRepo
+       OtherRepo -- "缓存构件" --> PrivateRepo
+   ```
 
 ## 配置远程仓库
 
@@ -888,3 +895,466 @@ database.jdbc.password = #{db.password}
     </profile>
 </profiles>
 ```
+
+# 编写插件
+
+> [!TIP]
+>
+> 完整的例子请看 [hello-maven-plugin](https://github.com/ricardo-z-chao/hello-maven-plugin)。
+
+## 创建插件项目
+
+选择 maven-archetype-plugin 这个 Archetype 来创建一个插件项目。插件本身也是 Maven 项目，它的 packaging 必须是`maven-plugin`。
+
+```shell
+mvn archetype:generate -DarchetypeArtifactId=maven-archetype-plugin
+```
+
+> [!NOTE]
+> 通常 Maven 插件命名为`${prefix}`-maven-plugin。
+
+插件项目的 pom 文件内容通常如下：
+
+```xml{8}
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.github.ricardochao</groupId>
+  <artifactId>hello-maven-plugin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
+  <name>hello-maven-plugin Maven Plugin</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>8</maven.compiler.release>
+    <maven-plugin-api.version>3.9.6</maven-plugin-api.version>
+    <maven-plugin-tools.version>3.16.0</maven-plugin-tools.version>
+  </properties>
+
+  <dependencies>
+    <!-- Maven 插件开发的核心 API，提供 Mojo、Log、参数注入等接口 -->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${maven-plugin-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- 提供 @Mojo、@Parameter 等注解，用于声明插件目标（goal）和参数配置 -->
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>${maven-plugin-tools.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- maven-plugin-plugin 会扫描 Mojo 注解并生成插件说明 plugin.xml -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>${maven-plugin-tools.version}</version>
+          <executions>
+            <execution>
+              <!-- 自动生成一个名为 help 的 goal，执行 mvn hello:help 可输出本插件的帮助信息（所有 goal 和参数说明），
+                   HelpMojo 由 maven-plugin-plugin 自动生成，无需手写。同时会生成 plugin-help.xml 供 IDE 使用 -->
+              <id>help-mojo</id>
+              <goals>
+                <goal>helpmojo</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
+```
+
+> [!IMPORTANT]
+>
+> 一个插件必须要包含一个插件说明（_Plugin descriptor_），存储在插件包的 META-INF/maven/plugin.xml 中，可以使用 [maven-plugin-plugin](https://maven.apache.org/plugins/maven-plugin-plugin/) 插件在构建时自动生成插件说明。
+
+## 为插件编写目标
+
+每个插件都必须包含一个或者多个目标，Maven 称之为 Mojo（_Maven Old Java Object_），编写插件的时候必须提供一个或多个继承自`AbstractMojo`的类。`@Mojo`注解标记这个类为一个 Mojo 类。
+
+```java{1}
+@Mojo(name = "sayhi")
+public class GreetingMojo extends AbstractMojo {
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    // ...
+  }
+}
+```
+
+大部分 Maven 插件及其目标都是可配置的，因此在编写 Mojo 的时候需要注意提供可配置的参数。参数通过字段提供，并使用`@Parameter`注解标注，参数可以在插件 POM 的`<configuration>`元素中配置，也可以通过在命令行使用 -D 指定，属性的名称由`property`指定，同时还可以通过`defaultValue`提供默认值。
+
+```java
+@Mojo(
+  name = "sayhi",
+  defaultPhase = LifecyclePhase.VERIFY // 这里的defaultPhase 是一个建议值，要绑定到默认的阶段需要在使用时指定
+)
+public class GreetingMojo extends AbstractMojo {
+
+  /**
+   * 可通过 -Dgreeting.name=xxx 或 POM 中的 <configuration> 元素配置
+   */
+  @Parameter(property = "greeting.name", defaultValue = "world")
+  private String name;
+
+  @Parameter(property = "greeting.something")
+  private String saySomething;
+
+  /**
+   * 如果需要插件读取项目的相关信息，可以通过表达式来注入
+   */
+  @Parameter(defaultValue = "${project}", readonly = true, required = true)
+  private MavenProject project;
+
+  @Override
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    getLog().info("Hello, " + name + ". " + saySomething);
+    getLog().info("project: " + project.getGroupId() + ":" + project.getArtifactId() + ":" + project.getVersion());
+  }
+}
+```
+
+> [!NOTE]
+>
+> 更多注解含义请看[官方文档](https://maven.apache.org/plugin-tools/maven-plugin-tools-annotations/index.html)。
+
+Maven 插件应当通过 Mojo 的日志接口输出信息，而不是直接使用`System.out`或者`System.err`，这样 Maven 才能统一处理日志级别和输出。`AbstractMojo`提供了`getLog()`方法，可以用它来输出日志，Maven 内部最终会将日志调用委托给 SLF4J。
+
+错误处理方面，Mojo 的`execute()`可以抛出两种异常，它们都继承自`AbstractMojoExecutionException`：
+
+- `MojoExecutionException`：表示执行过程中发生了意外错误，通常由其他异常包装而来，例如 IO 失败、依赖无法解析等，Maven 会认为是构建环境出了问题。
+- `MojoFailureException`：表示构建结果不符合预期，例如源代码检查不通过、测试失败等，属于构建失败但环境正常的情况。
+
+推荐的做法是捕获底层异常并包装为`MojoExecutionException`，同时保留原始异常作为 cause，这样在启用 -e 选项时可以输出完整的堆栈信息。
+
+> [!WARNING]
+>
+> 不要在`execute()`中吞掉异常，否则构建会错误地显示为成功。对于可忽略的错误至少应调用`getLog().warn()`输出。
+
+## 测试插件
+
+使用 [maven-plugin-testing-harness](https://maven.apache.org/plugin-testing/maven-plugin-testing-harness/) 用于测试，它可以在测试中模拟`MavenProject`、`MavenSession`等对象，并对插件说明做校验。
+
+1. 创建一个 pom.xml 在 test/resources 中
+
+   ```xml
+   <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+     <groupId>io.github.ricardo</groupId>
+     <artifactId>project-to-test</artifactId>
+     <version>1.0-SNAPSHOT</version>
+     <packaging>jar</packaging>
+
+     <name>Test GreetingMojo</name>
+
+     <build>
+       <plugins>
+         <plugin>
+           <artifactId>hello-maven-plugin</artifactId>
+           <configuration>
+             <saySomething>use pom.xml</saySomething>
+           </configuration>
+         </plugin>
+       </plugins>
+     </build>
+   </project>
+   ```
+
+2. 编写测试用例
+
+   ```java
+   @MojoTest
+   public class GreetingMojoTest {
+
+     @Inject
+     private MavenSession session;
+
+     @BeforeEach
+     void setUp() {
+       session.getUserProperties().setProperty("greeting.something", "Code in Java.");
+     }
+
+     @Test
+     @InjectMojo(goal = "sayhi", pom = "src/test/resources/pom.xml")
+     public void testExecute(Mojo mojo) throws MojoExecutionException, MojoFailureException {
+       mojo.execute();
+     }
+
+     @Test
+     @InjectMojo(goal = "sayhi")
+     @MojoParameter(name = "name", value = "ricardo")
+     public void testExecuteWithoutPOM(Mojo mojo) throws MojoExecutionException, MojoFailureException {
+       mojo.execute();
+     }
+   }
+   ```
+
+3. 运行测试
+
+   ```shell
+   mvn test
+   ```
+
+## 使用插件
+
+要使用这个插件，将插件安装到本地仓库，然后在其他项目中调用插件：
+
+```shell
+mvn io.github.ricardochao:hello-maven-plugin:1.0-SNAPSHOT:sayhi -Dgreeting.something="Code in Java."
+```
+
+或者在项目的 POM 中配置：
+
+```xml{7}
+<plugin>
+  <groupId>io.github.ricardochao</groupId>
+  <artifactId>hello-maven-plugin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <configuration>
+    <!-- 配置参数使用的是字段名而不是property -->
+    <saySomething>Code in Java.</saySomething>
+  </configuration>
+  <executions>
+    <execution>
+      <id>verrify</id>
+        <goals>
+          <goal>sayhi</goal>
+        </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+# 编写 Archetype
+
+> [!TIP]
+>
+> 这是一个 Archetype 的[例子](https://github.com/ricardo-z-chao/multi-module-init-archetype)，可以生成 Java 项目初始化时的一些必要配置文件。
+
+## 创建 Archetype 项目
+
+Archetype 是项目模板，Archetype 本身也是 Maven 项目，它由两部分组成：
+
+1. 描述项目骨架的模板文件（src/main/resources/archetype-resources）
+2. 元数据文件（src/main/resources/META-INF/maven/archetype-metadata.xml）
+
+创建一个 Archetype 项目，在命令行输入：
+
+```shell
+mvn archetype:generate -DarchetypeArtifactId=maven-archetype-archetype -DarchetypeVersion=1.5
+```
+
+Archetype 项目自身的 pom.xml 中其 packaging 必须为`maven-archetype`。
+
+```xml{9}
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>my.groupId</groupId>
+  <artifactId>my-archetype-id</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <packaging>maven-archetype</packaging>
+
+  <build>
+    <!-- 作用是让 Maven 认识 maven-archetype 这种特殊的打包类型。archetype-packaging 这个扩展里包含了处理 maven-archetype 打包所需的组件（比如生命周期映射） -->
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>3.4.1</version>
+      </extension>
+    </extensions>
+  </build>
+</project>
+```
+
+> [!TIP]
+>
+> 可以使用 create-from-project 从一个已存在的项目中提取 Archetype：
+>
+> ```shell
+> mvn archetype:create-from-project
+> ```
+>
+> 执行后会在 target/generated-sources/archetype 下生成 Archetype 项目，再进入该目录执行`mvn install`安装到本地仓库即可使用。
+
+## 创建模版文件
+
+模板文件中可以使用`${name}`形式的占位符，生成项目时由用户输入或元数据中定义的值替换。文件名和目录名也可以使用占位符，通常使用双下划线包裹，例如`__packageName__`目录在生成后会变成`com.example.app`。
+
+常用属性如下：
+
+| 属性            | 含义                  |
+| :-------------- | :-------------------- |
+| `${groupId}`    | 生成项目的 groupId    |
+| `${artifactId}` | 生成项目的 artifactId |
+| `${version}`    | 生成项目的 version    |
+| `${package}`    | 生成项目的根包名      |
+
+在生成时，若使用`.`作为分隔符，`${package}`会被转换为目录结构，例如`com.example.app`会被替换为 `com/example/app`。但如果用于文件名或普通位置的替换，需要自行处理。
+
+模板中的 src/main/resources/archetype-resources/pom.xml 文件内容：
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>${groupId}</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <version>${version}</version>
+
+  <packaging>jar</packaging>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+</project>
+```
+
+Java 源文件 archetype-resources/src/main/java/App.java 内容：
+
+```java
+package ${package};
+
+public class App {
+  public static void main(String[] args) {
+    System.out.println("Hello World!");
+  }
+}
+```
+
+> [!TIP]
+>
+> 如果需要进一步自定义生成的项目，可以在 src/main/resources/META-INF 目录下创建命名为 archetype-post-generate.groovy 的脚本，这个脚本将最终会被包含到生成的 Archetype 项目中的 META-INF 文件夹，这个脚本是在项目生成时进行后置处理，这个脚本可以访问`ArchetypeGenerationRequest`对象以及所有`System.getProperties()`以及用户指定的所有原型生成属性。
+
+## 配置 archetype-metadata.xml
+
+元数据文件用于声明 Archetype 的基本信息、包含哪些文件以及需要用户输入的属性。对于简单的 Archetype，可以只声明文件集：
+
+```xml
+<archetype-descriptor xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
+  name="my-archetype-id">
+
+  <requiredProperties>
+        <requiredProperty key="package">
+            <defaultValue>com.example</defaultValue>
+        </requiredProperty>
+    </requiredProperties>
+
+    <fileSets>
+        <fileSet filtered="true" packaged="true">
+            <directory>src/main/java</directory>
+        </fileSet>
+        <fileSet filtered="true" packaged="true">
+            <directory>src/test/java</directory>
+        </fileSet>
+        <fileSet filtered="true" packaged="false">
+            <directory>src/main/resources</directory>
+        </fileSet>
+    </fileSets>
+</archetype-descriptor>
+```
+
+- `requiredProperties`声明生成项目时需要用户提供的属性，`defaultValue`提供了默认值。
+- `fileSets`声明需要拷贝的目录及其处理方式。`filtered="true"`表示对该目录下的文件进行占位符替换，`packaged="true"`表示将文件放入`${package}`对应的子目录中。
+
+> [!TIP]
+>
+> 更多有关描述符的[配置](https://maven.apache.org/archetype/archetype-models/archetype-descriptor/archetype-descriptor.html)。
+
+## 集成测试
+
+每个测试都是 Archetype 项目下 src/test/resources/projects/ 的目录，目录名称仅为测试的名称。例如：
+
+```
+src/test/resources/projects/basic
+├── archetype.properties
+├── goal.txt
+├── reference
+│   ├── .mvn
+│   │   ├── jvm.config
+│   │   └── maven.config
+│   ├── pom.xml
+│   └── src
+│       ├── main
+│       │   └── java
+│       │       └── it
+│       │           └── pkg
+│       │               └── App.java
+│       └── test
+│           └── java
+│               └── it
+│                   └── pkg
+│                       └── AppTest.java
+└── verify.groovy
+```
+
+- archetype.properties
+
+  这个文件表示生成项目时输入的属性，例如：
+
+  ```
+  groupId=com.example
+  artifactId=it-basic
+  version=1.0-SNAPSHOT
+  package=com.example
+  ```
+
+- goal.txt
+
+  在生成项目后，在生成的项目中需要执行的构建目标，例如：
+
+  ```
+  verify
+  ```
+
+- reference 目录
+
+  包含预期项目的参考目录，可选。如果要创建这个参考目录，可以先生成项目，然后将 target/test-classes/projects/`<name>`/project/`<artifactId>` 中的内容复制到 reference 目录中，并删除生成项目构建所留下的 build.log 文件和 target 目录。
+
+- verify.groovy
+
+  一个在执行构建目标后运行并检查结果的 Groovy 脚本。这个脚本可以访问生成项目的`context`和`context.projectDir`变量，如果脚本抛出异常或返回除了`true`或`null`以外的值，则该测试失败。例如:
+
+  ```groovy
+  def pom = new File(context.projectDir, 'pom.xml')
+  assert pom.text.contains('<artifactId>basic</artifactId>')
+  assert new File(context.projectDir, 'target/classes/it/pkg/App.class').exists()
+  ```
+
+当项目声明的 packaging 为`maven-archetype`时，Maven 会通过 archetype-packaging 这个扩展，加载一套专门针对这种打包类型的生命周期映射。maven-archetype-plugin 插件的 archetype:jar 目标被绑定到 package 阶段，archetype:integration-test 目标被绑定到了 integration-test 阶段。当运行`mvn verify`时，Maven 会按顺序走完 package → integration-test → verify。有时单独运行`mvn archetype:integration-test`会失败是因为这时还没有生成 jar 包，因此集成测试要用这个命令来执行：
+
+```shell
+mvn verify
+```
+
+## 安装并生成项目
+
+编写完成后，在 Archetype 项目目录执行`mvn clean install`安装到本地仓库，然后就可以使用它生成新项目：
+
+```shell
+mvn archetype:generate \
+  -DarchetypeGroupId=com.example \
+  -DarchetypeArtifactId=hello-archetype \
+  -DarchetypeVersion=1.0-SNAPSHOT
+```
+
+> [!TIP]
+>
+> 使用本地仓库中的 Archetype 时，最好指定 -DarchetypeCatalog=local，避免 Maven 先从远程仓库下载庞大的 archetype catalog。
